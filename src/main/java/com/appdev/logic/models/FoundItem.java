@@ -20,11 +20,11 @@ public class FoundItem extends Item {
       String itemSubtype,
       String itemDescription,
       String locationDetails,
+      LocalDateTime dateTimeFound,
       String itemPhotoPath,
       String reporterName,
       String reporterEmail,
       String reporterPhone,
-      LocalDateTime dateTimeFound,
       Status status,
       LocalDateTime createdAt) {
     super(

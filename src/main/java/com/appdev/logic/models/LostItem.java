@@ -19,11 +19,11 @@ public class LostItem extends Item {
       String itemSubtype,
       String itemDescription,
       String locationDetails,
+      LocalDateTime dateTimeLost,
       String itemPhotoPath,
       String reporterName,
       String reporterEmail,
       String reporterPhone,
-      LocalDateTime dateTimeLost,
       Status status,
       LocalDateTime createdAt) {
     super(
