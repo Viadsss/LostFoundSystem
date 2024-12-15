@@ -8,7 +8,7 @@ public class MainFrame extends JFrame {
     setTitle("ULaF");
     setSize(1366, 768); // 1280 x 720
     setLocationRelativeTo(null);
-    // setContentPane(null);
+    setContentPane(new PracticePage());
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     PageManager.getInstance().initApplication(this);

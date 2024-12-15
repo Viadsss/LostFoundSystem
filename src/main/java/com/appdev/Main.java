@@ -12,7 +12,7 @@ import javax.swing.UIManager;
 
 public class Main {
   public static void main(String[] args) {
-    FlatInspector.install("ctrl shift alt X");
+    FlatInspector.install("ctrl shift alt T");
     FlatUIDefaultsInspector.install("ctrl shift alt Y");
 
     FlatLaf.registerCustomDefaultsSource("themes");
