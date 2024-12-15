@@ -10,7 +10,7 @@ import java.awt.Font;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-public class Main {
+public class LostFoundSystem {
   public static void main(String[] args) {
     FlatInspector.install("ctrl shift alt T");
     FlatUIDefaultsInspector.install("ctrl shift alt Y");
