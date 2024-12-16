@@ -48,4 +48,36 @@ public class LostItemDAO {
 
     return lostItems;
   }
+
+  public LostItem getLostItemById(int id) {
+    String query = "SELECT * FROM lost_items WHERE lost_item_id = ?";
+    LostItem item = null;
+
+    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+      pstmt.setInt(1, id);
+
+      ResultSet rs = pstmt.executeQuery();
+      if (rs.next()) {
+        item =
+            new LostItem(
+                rs.getInt("lost_item_id"),
+                rs.getString("item_type"),
+                rs.getString("item_subtype"),
+                rs.getString("item_description"),
+                rs.getString("location_details"),
+                rs.getTimestamp("date_time_lost").toLocalDateTime(),
+                rs.getString("item_photo_path"),
+                rs.getString("reporter_name"),
+                rs.getString("reporter_email"),
+                rs.getString("reporter_phone"),
+                LostItem.Status.valueOf(rs.getString("status")),
+                rs.getTimestamp("createdAt").toLocalDateTime());        
+      }        
+
+    } catch (SQLException e) {
+      Logger.error(e, "Error retrieving lost item with ID {} from the database.", id);
+    }
+
+    return item;
+  }
 }
