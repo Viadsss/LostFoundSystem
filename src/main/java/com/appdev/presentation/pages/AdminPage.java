@@ -5,6 +5,7 @@ import com.appdev.data.dao.LostItemDAO;
 import com.appdev.logic.managers.StyleManager;
 import com.appdev.logic.models.FoundItem;
 import com.appdev.logic.models.LostItem;
+import com.appdev.presentation.components.forms.ItemFormUpdate;
 import com.appdev.presentation.components.forms.ItemFormView;
 import com.appdev.presentation.components.table.SearchFilterDocumentListener;
 import com.appdev.presentation.components.table.TableDateTimeCellRenderer;
@@ -20,10 +21,16 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import net.miginfocom.swing.MigLayout;
 import raven.modal.ModalDialog;
+import raven.modal.Toast;
 import raven.modal.component.SimpleModalBorder;
 import raven.modal.option.Location;
 import raven.modal.option.Option;
 import raven.modal.option.Option.BackgroundClickType;
+import raven.modal.toast.option.ToastLocation;
+import raven.modal.toast.option.ToastOption;
+import raven.modal.toast.option.ToastStyle;
+import raven.modal.toast.option.ToastStyle.BackgroundType;
+import raven.modal.toast.option.ToastStyle.BorderType;
 
 public class AdminPage extends JPanel {
   LostItemDAO lostItemDAO = new LostItemDAO();
@@ -177,7 +184,15 @@ public class AdminPage extends JPanel {
         LostItem item = lostItemDAO.getLostItemById(selectedLostItemId);
         showItemFormViewModal(item);
       } else {
-       JOptionPane.showMessageDialog(this, "Please select a lost item first on the table", "Viewing Error", JOptionPane.ERROR_MESSAGE); 
+        JOptionPane.showMessageDialog(this, "Please select a lost item first on the table", "Viewing Error", JOptionPane.ERROR_MESSAGE); 
+      }
+    });
+    updateButton.addActionListener(e -> {
+      if (selectedLostItemId != -1) {
+        LostItem item = lostItemDAO.getLostItemById(selectedLostItemId);
+        showItemFormUpdateModal(item);
+      } else {
+        JOptionPane.showMessageDialog(this, "Please select a lost item first on the table", "Updating Error", JOptionPane.ERROR_MESSAGE); 
       }
     });        
     
@@ -327,9 +342,18 @@ public class AdminPage extends JPanel {
         FoundItem item = foundItemDAO.getFoundItemById(selectedFoundItemId);
         showItemFormViewModal(item);
       } else {
-       JOptionPane.showMessageDialog(this, "Please select a lost item first on the table", "Viewing Error", JOptionPane.ERROR_MESSAGE); 
+       JOptionPane.showMessageDialog(this, "Please select a found item first on the table", "Viewing Error", JOptionPane.ERROR_MESSAGE); 
       }
-    });            
+    });
+
+    updateButton.addActionListener(e -> {
+      if (selectedFoundItemId != -1) {
+        FoundItem item = foundItemDAO.getFoundItemById(selectedFoundItemId);
+        showItemFormUpdateModal(item);
+      } else {
+       JOptionPane.showMessageDialog(this, "Please select a found item first on the table", "Updating Error", JOptionPane.ERROR_MESSAGE); 
+      }
+    });                 
 
     // Adding
     actionPanel.add(searchField);
@@ -399,5 +423,77 @@ public class AdminPage extends JPanel {
         
         SimpleModalBorder modal = new SimpleModalBorder(new ItemFormView(item), "View");                
         ModalDialog.showModal(this, modal, option);
-    }    
+    }
+    
+    private void showItemFormUpdateModal(LostItem item) {
+        ItemFormUpdate form = new ItemFormUpdate(item); 
+
+        Option option = ModalDialog.createOption().setBackgroundClickType(BackgroundClickType.BLOCK);
+        option.getLayoutOption().setSize(-1, 1f)
+                .setLocation(Location.CENTER, Location.TOP)
+                .setAnimateDistance(0.7f, 0);
+        
+        SimpleModalBorder modal = new SimpleModalBorder(form, "Update", SimpleModalBorder.OK_CANCEL_OPTION, 
+          (controller, action) -> {
+            if (action == SimpleModalBorder.OK_OPTION) {
+              if (form.validateItemForm()) {
+                LostItem updatedItem = form.getUpdatedLostItem(item);
+                System.out.println(updatedItem.getItemPhotoPath());
+                System.out.println(updatedItem.getItemDescription());
+                System.out.println(updatedItem.getItemType());
+                System.out.println(updatedItem.getReporterName());
+                showToast(Toast.Type.SUCCESS, "Lost Item Updated successfully");
+              } else {
+                // showToast(Toast.Type.ERROR, "Please put a proper values in the form");
+                controller.consume();
+              }
+            } else if (action == SimpleModalBorder.CANCEL_OPTION) {
+              System.out.println("Clicked CANCEL");
+            }
+          }
+        );
+
+        ModalDialog.showModal(this, modal, option);
+    }
+    
+    private void showItemFormUpdateModal(FoundItem item) {
+        ItemFormUpdate form = new ItemFormUpdate(item); 
+
+        Option option = ModalDialog.createOption().setBackgroundClickType(BackgroundClickType.BLOCK);
+        option.getLayoutOption().setSize(-1, 1f)
+                .setLocation(Location.CENTER, Location.TOP)
+                .setAnimateDistance(0.7f, 0);
+        
+        SimpleModalBorder modal = new SimpleModalBorder(form, "Update", SimpleModalBorder.OK_CANCEL_OPTION, 
+          (controller, action) -> {
+            if (action == SimpleModalBorder.OK_OPTION) {
+              if (form.validateItemForm()) {
+                FoundItem updatedItem = form.getUpdatedLostItem(item);
+                System.out.println(updatedItem.getItemPhotoPath());
+                System.out.println(updatedItem.getItemDescription());
+                System.out.println(updatedItem.getItemType());
+                System.out.println(updatedItem.getReporterName());
+                showToast(Toast.Type.SUCCESS, "Found Item Updated successfully");
+              } else {
+                // showToast(Toast.Type.ERROR, "Please put a proper values in the form");
+                controller.consume();
+              }
+            } else if (action == SimpleModalBorder.CANCEL_OPTION) {
+              System.out.println("Clicked CANCEL");
+            }
+          }
+        );
+
+        ModalDialog.showModal(this, modal, option);
+    }
+    
+    private void showToast(Toast.Type type, String message) {
+      ToastStyle style = new ToastStyle();
+      style.setBackgroundType(BackgroundType.DEFAULT);
+      style.setBorderType(BorderType.LEADING_LINE);
+      style.setShowLabel(true);
+      style.setIconSeparateLine(true);
+      ToastOption option = Toast.createOption().setStyle(style);
+      Toast.show(this, type, message, ToastLocation.TOP_CENTER, option);      
+    }
 }
