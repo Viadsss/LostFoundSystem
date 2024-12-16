@@ -11,6 +11,6 @@ public class RequiredLabel extends JLabel {
 
   private void setLabelText(String text) {
     // Add the asterisk with HTML styling
-    setText(String.format("<html>%s<span style='color:red;'>*</span></html>", text));
+    setText(String.format("<html>%s <span style='color:red;'>*</span></html>", text));
   }
 }
