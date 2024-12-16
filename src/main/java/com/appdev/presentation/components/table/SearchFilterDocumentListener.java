@@ -81,7 +81,7 @@ public class SearchFilterDocumentListener implements DocumentListener {
                 String typeSearchText = text.substring(7).trim();
                 String type = model.getValueAt(rowIndex, 6).toString().toLowerCase();
                 return type.contains(typeSearchText);
-              }              
+              }
 
               // Default behavior: search across all columns if no keyword is specified
               // Filter 'ID' column
@@ -129,7 +129,7 @@ public class SearchFilterDocumentListener implements DocumentListener {
               String status = model.getValueAt(rowIndex, 6).toString().toLowerCase();
               if (status.contains(text)) {
                 return true;
-              }              
+              }
 
               return false; // If no match in any of the columns, return false
             }
