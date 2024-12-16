@@ -17,7 +17,7 @@ Before you begin, ensure you have the following installed:
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/your-repository.git
+git clone https://github.com/Viadsss/LostFoundSystem.git
 cd your-repository
 ```
 
@@ -50,7 +50,7 @@ Run the `init.sql` script to set up the database:
   Get-Content .\init.sql | mysql -u root -p
   ```
 
-- **For CMD, Bash, or Git Bash**:
+- **For CMD or Bash**:
   ```bash
   mysql -u root -p < init.sql
   ```
@@ -67,10 +67,10 @@ Compile and run the application in your IDE (e.g., NetBeans or VS Code).
 
 If you're a collaborator on this repository, follow these steps to contribute:
 
-1. **Clone the Repository** (if you haven’t already):
+1. **Clone the Repository & Setup:** (if you haven’t already):
    ```bash
-   git clone https://github.com/yourusername/your-repository.git
-   cd your-repository
+   git clone https://github.com/Viadsss/LostFoundSystem.git
+   cd LostFoundSystem
    ```
 
 2. **Pull the Latest Changes**:
@@ -86,17 +86,12 @@ If you're a collaborator on this repository, follow these steps to contribute:
 4. **Commit Changes**:
    After making changes, commit them:
    ```bash
-   git add .
-   git commit -m "feat: add new feature description"
+   git add [file/s]
+   git commit -m "message"
    ```
-    **Commit Message Guidelines:**
-    - **feat**: For new features (e.g., `feat: add user authentication`).
-    - **fix**: For bug fixes (e.g., `fix: resolve login error`).
-    - **refactor**: For code refactoring (e.g., `refactor: optimize database queries`).
-    - **docs**: For documentation updates (e.g., `docs: update README with setup instructions`).
 
 5. **Push Changes**:
-   Push your changes directly to the `main` branch:
+   Push your changes directly to the `main` branch for now:
    ```bash
    git push origin main
    ```
