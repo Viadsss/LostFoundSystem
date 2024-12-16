@@ -1,10 +1,9 @@
 package com.appdev.logic.managers;
 
-import java.awt.*;
-import javax.swing.*;
-
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import java.awt.*;
+import javax.swing.*;
 
 public class StyleManager {
   public static void card(JPanel panel) {
@@ -41,59 +40,40 @@ public class StyleManager {
     label.putClientProperty("FlatLaf.style", "font: $h3.font");
   }
 
-    public static void styleTablePanel(JPanel panel) {
-        panel.putClientProperty(
-            FlatClientProperties.STYLE, "arc:20; background:$Table.background;"
-        );
-    }
+  public static void styleTablePanel(JPanel panel) {
+    panel.putClientProperty(FlatClientProperties.STYLE, "arc:20; background:$Table.background;");
+  }
 
-    public static void styleTable(JTable table) {
-        table.putClientProperty(
-            FlatClientProperties.STYLE,
-            "rowHeight:90; showHorizontalLines:true; showVerticalLines:true;"
-        );
-        table.getTableHeader().putClientProperty(
-            FlatClientProperties.STYLE,
-            "height:30; font:bold;"
-        );
-    }
+  public static void styleTable(JTable table) {
+    table.putClientProperty(
+        FlatClientProperties.STYLE,
+        "rowHeight:90; showHorizontalLines:true; showVerticalLines:true;");
+    table.getTableHeader().putClientProperty(FlatClientProperties.STYLE, "height:30; font:bold;");
+  }
 
-    public static void styleScrollPane(JScrollPane scrollPane) {
-        scrollPane.getVerticalScrollBar().putClientProperty(
+  public static void styleScrollPane(JScrollPane scrollPane) {
+    scrollPane
+        .getVerticalScrollBar()
+        .putClientProperty(
             FlatClientProperties.STYLE,
-            "trackArc:$ScrollBar.thumbArc; trackInsets:3,3,3,3; thumbInsets:3,3,3,3; background:$Table.background;"
-        );
-    }
+            "trackArc:$ScrollBar.thumbArc; trackInsets:3,3,3,3; thumbInsets:3,3,3,3; background:$Table.background;");
+  }
 
-    public static void styleTitle(JLabel title) {
-        title.putClientProperty(
-            FlatClientProperties.STYLE,
-            "font:bold +2;"
-        );
-    }
+  public static void styleTitle(JLabel title) {
+    title.putClientProperty(FlatClientProperties.STYLE, "font:bold +2;");
+  }
 
-    public static void styleActionPanel(JPanel actionPanel) {
-        actionPanel.putClientProperty(
-            FlatClientProperties.STYLE,
-            "background:null;"
-        );
-    }
+  public static void styleActionPanel(JPanel actionPanel) {
+    actionPanel.putClientProperty(FlatClientProperties.STYLE, "background:null;");
+  }
 
-    public static void styleSearchField(JTextField searchField) {
-        searchField.putClientProperty(
-            FlatClientProperties.PLACEHOLDER_TEXT,
-            "Search..."
-        );
-        searchField.putClientProperty(
-            FlatClientProperties.TEXT_FIELD_LEADING_ICON,
-            new FlatSVGIcon("icons/search.svg", 0.4f)
-        );
-    }
+  public static void styleSearchField(JTextField searchField) {
+    searchField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search...");
+    searchField.putClientProperty(
+        FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("icons/search.svg", 0.4f));
+  }
 
-    public static void styleSeparator(JSeparator separator) {
-        separator.putClientProperty(
-            FlatClientProperties.STYLE,
-            "foreground:$Table.gridColor;"
-        );
-    }  
+  public static void styleSeparator(JSeparator separator) {
+    separator.putClientProperty(FlatClientProperties.STYLE, "foreground:$Table.gridColor;");
+  }
 }

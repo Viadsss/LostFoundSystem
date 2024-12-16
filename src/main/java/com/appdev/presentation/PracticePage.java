@@ -2,7 +2,6 @@ package com.appdev.presentation;
 
 import com.appdev.logic.managers.StyleManager;
 import com.appdev.presentation.components.labels.RequiredLabel;
-
 import javax.swing.*;
 import net.miginfocom.swing.MigLayout;
 
