@@ -2,7 +2,6 @@ package com.appdev.logic.managers;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.table.JTableHeader;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
