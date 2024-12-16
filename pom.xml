@@ -66,9 +66,9 @@
         
         <!-- Date Picker -->
         <dependency>
-            <groupId>com.github.lgooddatepicker</groupId>
-            <artifactId>LGoodDatePicker</artifactId>
-            <version>11.2.1</version>
+            <groupId>io.github.dj-raven</groupId>
+            <artifactId>swing-datetime-picker</artifactId>
+            <version>1.4.1</version>
         </dependency>
 
         <!-- Modals -->
