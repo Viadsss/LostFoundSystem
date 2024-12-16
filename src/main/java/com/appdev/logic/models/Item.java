@@ -1,6 +1,7 @@
 package com.appdev.logic.models;
 
 import java.time.LocalDateTime;
+import javax.swing.Icon;
 
 public abstract class Item {
   private String itemType;
@@ -105,4 +106,6 @@ public abstract class Item {
   public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
+
+  public abstract Icon getImageIcon(int width, int height, float round);
 }

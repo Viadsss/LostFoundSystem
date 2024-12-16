@@ -1,6 +1,8 @@
 package com.appdev.logic.models;
 
 import java.time.LocalDateTime;
+import javax.swing.Icon;
+import raven.extras.AvatarIcon;
 
 public class FoundItem extends Item {
   private int foundItemId;
@@ -64,5 +66,13 @@ public class FoundItem extends Item {
 
   public void setStatus(Status status) {
     this.status = status;
+  }
+
+  @Override
+  public Icon getImageIcon(int width, int height, float round) {
+    final String PHOTO_FOLDER = "imgs/foundItems/";
+    AvatarIcon icon = new AvatarIcon(PHOTO_FOLDER + super.getItemPhotoPath(), width, height, round);
+    icon.setType(AvatarIcon.Type.MASK_SQUIRCLE);
+    return icon;
   }
 }
