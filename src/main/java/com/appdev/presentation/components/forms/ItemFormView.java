@@ -15,7 +15,7 @@ public class ItemFormView extends JScrollPane {
   private JPanel panel;
 
   public ItemFormView(LostItem item) {
-    panel = new JPanel(new MigLayout("fillx,wrap,insets 5 30 5 30, width 500", "[fill]", ""));
+    panel = new JPanel(new MigLayout("fillx,wrap,insets 5 30 10 30, width 500", "[fill]", ""));
     setViewportView(panel);
     setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
     setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -23,7 +23,7 @@ public class ItemFormView extends JScrollPane {
   }
 
   public ItemFormView(FoundItem item) {
-    panel = new JPanel(new MigLayout("fillx,wrap,insets 5 30 5 30, width 500", "[fill]", ""));
+    panel = new JPanel(new MigLayout("fillx,wrap,insets 5 30 10 30, width 500", "[fill]", ""));
     setViewportView(panel);
     setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
     setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
