@@ -15,7 +15,7 @@ VALUES
 ('Clothing', 'Scarf', 'Red wool scarf, brand new', 'Bench near Elm Street Coffee Shop', '2024-12-06 19:00:00', '6.jpg', 'Emma Brown', 'emma.brown@example.com', NULL, 'REPORTED');
 
 -- Populate the match_items table
-INSERT INTO match_items (lost_item_id, found_item_id, id_photo_path, path, status)
+INSERT INTO match_items (lost_item_id, found_item_id, id_photo_path, profile_path, status)
 VALUES
 (1, 1, NULL, NULL, 'MATCHED'),
 (2, 2, '7.jpg', '8.jpg', 'RESOLVED');
