@@ -2,7 +2,6 @@ package com.appdev.data.dao;
 
 import com.appdev.data.database.DbConnection;
 import com.appdev.logic.models.FoundItem;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -106,7 +105,8 @@ public class FoundItemDAO {
       pstmt.executeUpdate();
 
     } catch (SQLException e) {
-      Logger.error(e, "Error updating foundlost item with ID {} in the database.", item.getFoundItemId());
+      Logger.error(
+          e, "Error updating foundlost item with ID {} in the database.", item.getFoundItemId());
     }
   }
 }

@@ -131,7 +131,7 @@ public class ItemFormUpdate extends JScrollPane {
             Icon newPhoto = new AvatarIcon(selectedFile.getAbsolutePath(), 350, 350, 0);
             photoLabel.setIcon(newPhoto);
           } else {
-              System.out.println("No file selected.");
+            System.out.println("No file selected.");
           }
         });
 
@@ -233,7 +233,7 @@ public class ItemFormUpdate extends JScrollPane {
             Icon newPhoto = new AvatarIcon(selectedFile.getAbsolutePath(), 350, 350, 0);
             photoLabel.setIcon(newPhoto);
           } else {
-              System.out.println("No file selected.");
+            System.out.println("No file selected.");
           }
         });
 
@@ -292,13 +292,14 @@ public class ItemFormUpdate extends JScrollPane {
 
       String reporterName = nameField.getText().trim();
       String reporterEmail = emailField.getText().trim();
-      String reporterPhone = phoneField.getText().trim(); 
-      
+      String reporterPhone = phoneField.getText().trim();
+
       if (selectedFile == null) {
         itemPhotoPath = currentItem.getItemPhotoPath();
       } else {
-          itemPhotoPath = imageService.saveImage(
-              this, selectedFile, ImageService.LOST_ITEMS_PATH, currentItem.getLostItemId());        
+        itemPhotoPath =
+            imageService.saveImage(
+                this, selectedFile, ImageService.LOST_ITEMS_PATH, currentItem.getLostItemId());
       }
 
       currentItem.setItemType(itemType);
@@ -309,7 +310,7 @@ public class ItemFormUpdate extends JScrollPane {
       currentItem.setItemPhotoPath(itemPhotoPath);
       currentItem.setReporterName(reporterName);
       currentItem.setReporterEmail(reporterEmail);
-      
+
       if (reporterPhone.equals("")) {
         currentItem.setReporterPhone(null);
       } else {
@@ -318,10 +319,7 @@ public class ItemFormUpdate extends JScrollPane {
 
       itemService.updateLostItem(currentItem);
     } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, 
-                ex.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);      
+      JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       return false;
     }
 
@@ -345,13 +343,14 @@ public class ItemFormUpdate extends JScrollPane {
 
       String reporterName = nameField.getText().trim();
       String reporterEmail = emailField.getText().trim();
-      String reporterPhone = phoneField.getText().trim(); 
-      
+      String reporterPhone = phoneField.getText().trim();
+
       if (selectedFile == null) {
         itemPhotoPath = currentItem.getItemPhotoPath();
       } else {
-          itemPhotoPath = imageService.saveImage(
-              this, selectedFile, ImageService.FOUND_ITEMS_PATH, currentItem.getFoundItemId());        
+        itemPhotoPath =
+            imageService.saveImage(
+                this, selectedFile, ImageService.FOUND_ITEMS_PATH, currentItem.getFoundItemId());
       }
 
       currentItem.setItemType(itemType);
@@ -362,7 +361,7 @@ public class ItemFormUpdate extends JScrollPane {
       currentItem.setItemPhotoPath(itemPhotoPath);
       currentItem.setReporterName(reporterName);
       currentItem.setReporterEmail(reporterEmail);
-      
+
       if (reporterPhone.equals("")) {
         currentItem.setReporterPhone(null);
       } else {
@@ -371,15 +370,12 @@ public class ItemFormUpdate extends JScrollPane {
 
       itemService.updateFoundItem(currentItem);
     } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, 
-                ex.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);      
+      JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
       return false;
     }
 
     return true;
-  } 
+  }
 
   private Map<String, String[]> itemSubtypesMap;
   private JComboBox<String> itemTypeBox, itemSubtypeBox;

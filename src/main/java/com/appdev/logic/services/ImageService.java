@@ -6,10 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import org.tinylog.Logger;
 
 public class ImageService {
@@ -57,24 +55,24 @@ public class ImageService {
     }
   }
 
-    /**
+  /**
    * Opens a file chooser dialog to allow the user to select an image.
    *
    * @param parent - the parent component for the file chooser dialog.
    * @return the selected file, or {@code null} if no file is selected.
    */
-    public File selectImage(Component parent) {
-      if (fileChooser == null) {
-        fileChooser = new JFileChooser();
-        String userHome = System.getProperty("user.home");
-        String downloadsFolder = userHome + File.separator + "Downloads";
-        File downloadsDirectory = new File(downloadsFolder);
-        fileChooser.setDialogTitle("Choose an Image");
-        fileChooser.setCurrentDirectory(downloadsDirectory);
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Image File", "jpg", "jpeg", "png")); 
-      }
+  public File selectImage(Component parent) {
+    if (fileChooser == null) {
+      fileChooser = new JFileChooser();
+      String userHome = System.getProperty("user.home");
+      String downloadsFolder = userHome + File.separator + "Downloads";
+      File downloadsDirectory = new File(downloadsFolder);
+      fileChooser.setDialogTitle("Choose an Image");
+      fileChooser.setCurrentDirectory(downloadsDirectory);
+      fileChooser.setFileFilter(new FileNameExtensionFilter("Image File", "jpg", "jpeg", "png"));
+    }
 
-        int returnValue = fileChooser.showOpenDialog(parent);
-        return returnValue == JFileChooser.APPROVE_OPTION ? fileChooser.getSelectedFile() : null;
-    }  
+    int returnValue = fileChooser.showOpenDialog(parent);
+    return returnValue == JFileChooser.APPROVE_OPTION ? fileChooser.getSelectedFile() : null;
+  }
 }

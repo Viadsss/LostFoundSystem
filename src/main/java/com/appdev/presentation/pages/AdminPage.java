@@ -135,7 +135,10 @@ public class AdminPage extends JPanel {
               }
             });
     lostItemTable.getColumnModel().getColumn(5).setCellRenderer(new TableDateTimeCellRenderer());
-    lostItemTable.getColumnModel().getColumn(7).setCellRenderer(new TableImageCellRenderer(lostItemTable));
+    lostItemTable
+        .getColumnModel()
+        .getColumn(7)
+        .setCellRenderer(new TableImageCellRenderer(lostItemTable));
 
     JLabel title = new JLabel("Lost Items");
 
@@ -179,7 +182,8 @@ public class AdminPage extends JPanel {
     searchField
         .getDocument()
         .addDocumentListener(
-            new SearchFilterDocumentListener(lostItemTable, sorter, title, "Lost Items", searchField));
+            new SearchFilterDocumentListener(
+                lostItemTable, sorter, title, "Lost Items", searchField));
 
     viewButton.addActionListener(
         e -> {
@@ -234,7 +238,6 @@ public class AdminPage extends JPanel {
 
     return panel;
   }
-
 
   private Component foundItemTable() {
     JPanel panel =
@@ -304,7 +307,10 @@ public class AdminPage extends JPanel {
               }
             });
     foundItemTable.getColumnModel().getColumn(5).setCellRenderer(new TableDateTimeCellRenderer());
-    foundItemTable.getColumnModel().getColumn(7).setCellRenderer(new TableImageCellRenderer(foundItemTable));
+    foundItemTable
+        .getColumnModel()
+        .getColumn(7)
+        .setCellRenderer(new TableImageCellRenderer(foundItemTable));
 
     JLabel title = new JLabel("Found Items");
 
@@ -348,7 +354,8 @@ public class AdminPage extends JPanel {
     searchField
         .getDocument()
         .addDocumentListener(
-            new SearchFilterDocumentListener(foundItemTable, sorter, title, "Found Items", searchField));
+            new SearchFilterDocumentListener(
+                foundItemTable, sorter, title, "Found Items", searchField));
 
     viewButton.addActionListener(
         e -> {
@@ -439,22 +446,22 @@ public class AdminPage extends JPanel {
 
     // Re-populate the table with updated data
     for (LostItem item : lostItemDAO.getAllLostItems()) {
-        model.addRow(
-            new Object[] {
-                item.getLostItemId(),
-                item.getItemType(),
-                item.getItemSubtype(),
-                item.getItemDescription(),
-                item.getLocationDetails(),
-                item.getDateTimeLost(),
-                item.getStatus().toString(),
-                item.getImageIcon(80, 80, 3f)
-            });
+      model.addRow(
+          new Object[] {
+            item.getLostItemId(),
+            item.getItemType(),
+            item.getItemSubtype(),
+            item.getItemDescription(),
+            item.getLocationDetails(),
+            item.getDateTimeLost(),
+            item.getStatus().toString(),
+            item.getImageIcon(80, 80, 3f)
+          });
     }
 
     table.getTableHeader().repaint();
     table.repaint();
-}
+  }
 
   private void refreshFoundItemTable(DefaultTableModel model, JTable table) {
     // Clear existing rows
@@ -462,22 +469,22 @@ public class AdminPage extends JPanel {
 
     // Re-populate the table with updated data
     for (FoundItem item : foundItemDAO.getAllFoundItems()) {
-        model.addRow(
-            new Object[] {
-                item.getFoundItemId(),
-                item.getItemType(),
-                item.getItemSubtype(),
-                item.getItemDescription(),
-                item.getLocationDetails(),
-                item.getDateTimeFound(),
-                item.getStatus().toString(),
-                item.getImageIcon(80, 80, 3f)
-            });
+      model.addRow(
+          new Object[] {
+            item.getFoundItemId(),
+            item.getItemType(),
+            item.getItemSubtype(),
+            item.getItemDescription(),
+            item.getLocationDetails(),
+            item.getDateTimeFound(),
+            item.getStatus().toString(),
+            item.getImageIcon(80, 80, 3f)
+          });
     }
 
     table.getTableHeader().repaint();
     table.repaint();
-}
+  }
 
   private void showItemFormViewModal(LostItem item) {
     Option option = ModalDialog.createOption().setBackgroundClickType(BackgroundClickType.BLOCK);
@@ -550,7 +557,7 @@ public class AdminPage extends JPanel {
             form,
             "Update",
             SimpleModalBorder.OK_CANCEL_OPTION,
-           (controller, action) -> {
+            (controller, action) -> {
               if (action == SimpleModalBorder.OK_OPTION) {
                 if (form.updateFoundItem(item)) {
                   refreshFoundItemTable(foundItemModel, foundItemTable);
