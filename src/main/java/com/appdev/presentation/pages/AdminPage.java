@@ -33,8 +33,8 @@ import raven.modal.toast.option.ToastStyle.BackgroundType;
 import raven.modal.toast.option.ToastStyle.BorderType;
 
 public class AdminPage extends JPanel {
-  LostItemDAO lostItemDAO = new LostItemDAO();
-  FoundItemDAO foundItemDAO = new FoundItemDAO();
+  private LostItemDAO lostItemDAO = new LostItemDAO();
+  private FoundItemDAO foundItemDAO = new FoundItemDAO();
   private int selectedLostItemId = -1;
   private int selectedFoundItemId = -1;
   private DefaultTableModel lostItemModel, foundItemModel;
