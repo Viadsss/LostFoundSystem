@@ -4,6 +4,7 @@ import com.appdev.logic.managers.ItemTypeManager;
 import com.appdev.logic.models.FoundItem;
 import com.appdev.logic.models.LostItem;
 import com.appdev.logic.services.ImageService;
+import com.appdev.logic.services.ItemService;
 import com.appdev.presentation.components.labels.RequiredLabel;
 import com.formdev.flatlaf.FlatClientProperties;
 import java.awt.event.ActionEvent;
@@ -18,7 +19,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -28,7 +28,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import net.miginfocom.swing.MigLayout;
 import raven.datetime.component.date.DatePicker;
 import raven.datetime.component.time.TimePicker;
@@ -124,24 +123,15 @@ public class ItemFormUpdate extends JScrollPane {
     itemTypeBox.addActionListener(new ItemTypeActionListener());
     photoButton.addActionListener(
         e -> {
-          if (fileChooser == null) {
-            // Lazy initialization of JFileChooser
-            fileChooser = new JFileChooser();
-            String userHome = System.getProperty("user.home");
-            String downloadsFolder = userHome + File.separator + "Downloads";
-            File downloadsDirectory = new File(downloadsFolder);
-            fileChooser.setDialogTitle("Choose an Image to Upload");
-            fileChooser.setCurrentDirectory(downloadsDirectory);
-            fileChooser.setFileFilter(
-                new FileNameExtensionFilter("Image File", "jpg", "jpeg", "png"));
-          }
+          ImageService imageService = new ImageService();
+          selectedFile = imageService.selectImage(this);
 
-          int returnValue = fileChooser.showOpenDialog(this);
-          if (returnValue == JFileChooser.APPROVE_OPTION) {
-            selectedFile = fileChooser.getSelectedFile();
+          if (selectedFile != null) {
             System.out.println("Selected File: " + selectedFile.getAbsolutePath());
             Icon newPhoto = new AvatarIcon(selectedFile.getAbsolutePath(), 350, 350, 0);
             photoLabel.setIcon(newPhoto);
+          } else {
+              System.out.println("No file selected.");
           }
         });
 
@@ -235,24 +225,15 @@ public class ItemFormUpdate extends JScrollPane {
     itemTypeBox.addActionListener(new ItemTypeActionListener());
     photoButton.addActionListener(
         e -> {
-          if (fileChooser == null) {
-            // Lazy initialization of JFileChooser
-            fileChooser = new JFileChooser();
-            String userHome = System.getProperty("user.home");
-            String downloadsFolder = userHome + File.separator + "Downloads";
-            File downloadsDirectory = new File(downloadsFolder);
-            fileChooser.setDialogTitle("Choose an Image to Upload");
-            fileChooser.setCurrentDirectory(downloadsDirectory);
-            fileChooser.setFileFilter(
-                new FileNameExtensionFilter("Image File", "jpg", "jpeg", "png"));
-          }
+          ImageService imageService = new ImageService();
+          selectedFile = imageService.selectImage(this);
 
-          int returnValue = fileChooser.showOpenDialog(this);
-          if (returnValue == JFileChooser.APPROVE_OPTION) {
-            selectedFile = fileChooser.getSelectedFile();
+          if (selectedFile != null) {
             System.out.println("Selected File: " + selectedFile.getAbsolutePath());
             Icon newPhoto = new AvatarIcon(selectedFile.getAbsolutePath(), 350, 350, 0);
             photoLabel.setIcon(newPhoto);
+          } else {
+              System.out.println("No file selected.");
           }
         });
 
@@ -294,88 +275,111 @@ public class ItemFormUpdate extends JScrollPane {
     }
   }
 
-  public boolean validateItemForm() {
-    if (itemTypeBox.getSelectedIndex() == 0) {
-      JOptionPane.showMessageDialog(this, "Please select a valid type.");
+  public boolean updateLostItem(LostItem currentItem) {
+    ImageService imageService = new ImageService();
+    ItemService itemService = new ItemService();
+
+    try {
+      String itemType = itemTypeBox.getSelectedItem().toString();
+      String itemSubtype = itemSubtypeBox.getSelectedItem().toString();
+      String itemDescription = itemDescriptionArea.getText().trim();
+      String locationDetails = itemLocationArea.getText().trim();
+
+      LocalDate date = datePicker.getSelectedDate();
+      LocalTime time = timePicker.getSelectedTime();
+      LocalDateTime dateTimeLost = date.atTime(time);
+      String itemPhotoPath = null;
+
+      String reporterName = nameField.getText().trim();
+      String reporterEmail = emailField.getText().trim();
+      String reporterPhone = phoneField.getText().trim(); 
+      
+      if (selectedFile == null) {
+        itemPhotoPath = currentItem.getItemPhotoPath();
+      } else {
+          itemPhotoPath = imageService.saveImage(
+              this, selectedFile, ImageService.LOST_ITEMS_PATH, currentItem.getLostItemId());        
+      }
+
+      currentItem.setItemType(itemType);
+      currentItem.setItemSubtype(itemSubtype);
+      currentItem.setItemDescription(itemDescription);
+      currentItem.setLocationDetails(locationDetails);
+      currentItem.setDateTimeLost(dateTimeLost);
+      currentItem.setItemPhotoPath(itemPhotoPath);
+      currentItem.setReporterName(reporterName);
+      currentItem.setReporterEmail(reporterEmail);
+      
+      if (reporterPhone.equals("")) {
+        currentItem.setReporterPhone(null);
+      } else {
+        currentItem.setReporterPhone(reporterPhone);
+      }
+
+      itemService.updateLostItem(currentItem);
+    } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, 
+                ex.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);      
       return false;
     }
 
     return true;
   }
 
-  public LostItem getUpdatedLostItem(LostItem currentItem) {
+  public boolean updateFoundItem(FoundItem currentItem) {
     ImageService imageService = new ImageService();
+    ItemService itemService = new ItemService();
 
-    String itemType = itemTypeBox.getSelectedItem().toString();
-    String itemSubtype = itemSubtypeBox.getSelectedItem().toString();
-    String itemDescription = itemDescriptionArea.getText().trim();
-    String locationDetails = itemLocationArea.getText().trim();
+    try {
+      String itemType = itemTypeBox.getSelectedItem().toString();
+      String itemSubtype = itemSubtypeBox.getSelectedItem().toString();
+      String itemDescription = itemDescriptionArea.getText().trim();
+      String locationDetails = itemLocationArea.getText().trim();
 
-    LocalDate date = datePicker.getSelectedDate();
-    LocalTime time = timePicker.getSelectedTime();
-    LocalDateTime dateTimeLost = date.atTime(time);
+      LocalDate date = datePicker.getSelectedDate();
+      LocalTime time = timePicker.getSelectedTime();
+      LocalDateTime dateTimeFound = date.atTime(time);
+      String itemPhotoPath = null;
 
-    String reporterName = nameField.getText().trim();
-    String reporterEmail = emailField.getText().trim();
-    String reporterPhone = phoneField.getText().trim();
-
-    currentItem.setItemType(itemType);
-    currentItem.setItemSubtype(itemSubtype);
-    currentItem.setItemDescription(itemDescription);
-    currentItem.setLocationDetails(locationDetails);
-    currentItem.setDateTimeLost(dateTimeLost);
-    currentItem.setReporterName(reporterName);
-    currentItem.setReporterEmail(reporterEmail);
-    currentItem.setReporterPhone(reporterPhone);
-
-    if (selectedFile != null) {
-      String itemPhotoPath =
-          imageService.saveImage(
-              this, selectedFile, ImageService.LOST_ITEMS_PATH, currentItem.getLostItemId());
-      if (itemPhotoPath != null) {
-        currentItem.setItemPhotoPath(itemPhotoPath);
+      String reporterName = nameField.getText().trim();
+      String reporterEmail = emailField.getText().trim();
+      String reporterPhone = phoneField.getText().trim(); 
+      
+      if (selectedFile == null) {
+        itemPhotoPath = currentItem.getItemPhotoPath();
+      } else {
+          itemPhotoPath = imageService.saveImage(
+              this, selectedFile, ImageService.FOUND_ITEMS_PATH, currentItem.getFoundItemId());        
       }
+
+      currentItem.setItemType(itemType);
+      currentItem.setItemSubtype(itemSubtype);
+      currentItem.setItemDescription(itemDescription);
+      currentItem.setLocationDetails(locationDetails);
+      currentItem.setDateTimeFound(dateTimeFound);
+      currentItem.setItemPhotoPath(itemPhotoPath);
+      currentItem.setReporterName(reporterName);
+      currentItem.setReporterEmail(reporterEmail);
+      
+      if (reporterPhone.equals("")) {
+        currentItem.setReporterPhone(null);
+      } else {
+        currentItem.setReporterPhone(reporterPhone);
+      }
+
+      itemService.updateFoundItem(currentItem);
+    } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, 
+                ex.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);      
+      return false;
     }
 
-    return currentItem;
-  }
-
-  public FoundItem getUpdatedLostItem(FoundItem currentItem) {
-    ImageService imageService = new ImageService();
-
-    String itemType = itemTypeBox.getSelectedItem().toString();
-    String itemSubtype = itemSubtypeBox.getSelectedItem().toString();
-    String itemDescription = itemDescriptionArea.getText().trim();
-    String locationDetails = itemLocationArea.getText().trim();
-
-    LocalDate date = datePicker.getSelectedDate();
-    LocalTime time = timePicker.getSelectedTime();
-    LocalDateTime dateTimeFound = date.atTime(time);
-
-    String reporterName = nameField.getText().trim();
-    String reporterEmail = emailField.getText().trim();
-    String reporterPhone = phoneField.getText().trim();
-
-    currentItem.setItemType(itemType);
-    currentItem.setItemSubtype(itemSubtype);
-    currentItem.setItemDescription(itemDescription);
-    currentItem.setLocationDetails(locationDetails);
-    currentItem.setDateTimeFound(dateTimeFound);
-    currentItem.setReporterName(reporterName);
-    currentItem.setReporterEmail(reporterEmail);
-    currentItem.setReporterPhone(reporterPhone);
-
-    if (selectedFile != null) {
-      String itemPhotoPath =
-          imageService.saveImage(
-              this, selectedFile, ImageService.FOUND_ITEMS_PATH, currentItem.getFoundItemId());
-      if (itemPhotoPath != null) {
-        currentItem.setItemPhotoPath(itemPhotoPath);
-      }
-    }
-
-    return currentItem;
-  }
+    return true;
+  } 
 
   private Map<String, String[]> itemSubtypesMap;
   private JComboBox<String> itemTypeBox, itemSubtypeBox;
@@ -385,7 +389,6 @@ public class ItemFormUpdate extends JScrollPane {
   private TimePicker timePicker;
   private JLabel photoLabel;
   private JTextField nameField, emailField, phoneField;
-  private JFileChooser fileChooser;
   private File selectedFile;
   private JButton photoButton;
 }

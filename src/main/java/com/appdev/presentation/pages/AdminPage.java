@@ -37,6 +37,8 @@ public class AdminPage extends JPanel {
   FoundItemDAO foundItemDAO = new FoundItemDAO();
   private int selectedLostItemId = -1;
   private int selectedFoundItemId = -1;
+  private DefaultTableModel lostItemModel, foundItemModel;
+  private JTable lostItemTable, foundItemTable;
 
   public AdminPage() {
     init();
@@ -81,7 +83,7 @@ public class AdminPage extends JPanel {
           "Status",
           "Photo"
         };
-    DefaultTableModel model =
+    lostItemModel =
         new DefaultTableModel(columns, 0) {
           @Override
           public boolean isCellEditable(int row, int column) {
@@ -97,27 +99,27 @@ public class AdminPage extends JPanel {
         };
 
     // Table
-    JTable table = new JTable(model);
+    lostItemTable = new JTable(lostItemModel);
 
     // Table Sorter
-    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-    table.setRowSorter(sorter);
+    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(lostItemModel);
+    lostItemTable.setRowSorter(sorter);
 
     // Table Scroll
-    JScrollPane scrollPane = new JScrollPane(table);
+    JScrollPane scrollPane = new JScrollPane(lostItemTable);
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
     // Table Options
-    table.getColumnModel().getColumn(0).setMinWidth(40);
-    table.getColumnModel().getColumn(0).setMaxWidth(40);
-    table.getColumnModel().getColumn(7).setMinWidth(100);
-    table.getColumnModel().getColumn(7).setMaxWidth(100);
+    lostItemTable.getColumnModel().getColumn(0).setMinWidth(40);
+    lostItemTable.getColumnModel().getColumn(0).setMaxWidth(40);
+    lostItemTable.getColumnModel().getColumn(7).setMinWidth(100);
+    lostItemTable.getColumnModel().getColumn(7).setMaxWidth(100);
 
-    table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    table.getTableHeader().setReorderingAllowed(false);
+    lostItemTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    lostItemTable.getTableHeader().setReorderingAllowed(false);
 
     // Custom Cell Renderers
-    table
+    lostItemTable
         .getColumnModel()
         .getColumn(0)
         .setCellRenderer(
@@ -132,8 +134,8 @@ public class AdminPage extends JPanel {
                 super.setHorizontalAlignment(SwingConstants.CENTER);
               }
             });
-    table.getColumnModel().getColumn(5).setCellRenderer(new TableDateTimeCellRenderer());
-    table.getColumnModel().getColumn(7).setCellRenderer(new TableImageCellRenderer(table));
+    lostItemTable.getColumnModel().getColumn(5).setCellRenderer(new TableDateTimeCellRenderer());
+    lostItemTable.getColumnModel().getColumn(7).setCellRenderer(new TableImageCellRenderer(lostItemTable));
 
     JLabel title = new JLabel("Lost Items");
 
@@ -147,7 +149,7 @@ public class AdminPage extends JPanel {
 
     // STYLES
     StyleManager.styleTablePanel(panel);
-    StyleManager.styleTable(table);
+    StyleManager.styleTable(lostItemTable);
     StyleManager.styleTitle(title);
     StyleManager.styleActionPanel(actionPanel);
     StyleManager.styleScrollPane(scrollPane);
@@ -155,19 +157,19 @@ public class AdminPage extends JPanel {
     StyleManager.styleSeparator(separator);
 
     // Actions
-    model.addTableModelListener(
+    lostItemModel.addTableModelListener(
         e -> {
-          title.setText("Lost Items (" + table.getRowCount() + ")");
+          title.setText("Lost Items (" + lostItemTable.getRowCount() + ")");
         });
 
-    table.addMouseListener(
+    lostItemTable.addMouseListener(
         new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
-            int selectedRow = table.getSelectedRow();
+            int selectedRow = lostItemTable.getSelectedRow();
 
             if (selectedRow != -1) {
-              int id = (int) table.getValueAt(selectedRow, 0);
+              int id = (int) lostItemTable.getValueAt(selectedRow, 0);
               selectedLostItemId = id;
               System.out.println("Lost ID: " + selectedLostItemId);
             }
@@ -177,7 +179,7 @@ public class AdminPage extends JPanel {
     searchField
         .getDocument()
         .addDocumentListener(
-            new SearchFilterDocumentListener(table, sorter, title, "Lost Items", searchField));
+            new SearchFilterDocumentListener(lostItemTable, sorter, title, "Lost Items", searchField));
 
     viewButton.addActionListener(
         e -> {
@@ -217,7 +219,7 @@ public class AdminPage extends JPanel {
     panel.add(scrollPane);
 
     for (LostItem item : lostItemDAO.getAllLostItems()) {
-      model.addRow(
+      lostItemModel.addRow(
           new Object[] {
             item.getLostItemId(),
             item.getItemType(),
@@ -232,6 +234,7 @@ public class AdminPage extends JPanel {
 
     return panel;
   }
+
 
   private Component foundItemTable() {
     JPanel panel =
@@ -249,7 +252,7 @@ public class AdminPage extends JPanel {
           "Status",
           "Photo"
         };
-    DefaultTableModel model =
+    foundItemModel =
         new DefaultTableModel(columns, 0) {
           @Override
           public boolean isCellEditable(int row, int column) {
@@ -265,27 +268,27 @@ public class AdminPage extends JPanel {
         };
 
     // Table
-    JTable table = new JTable(model);
+    foundItemTable = new JTable(foundItemModel);
 
     // Table Sorter
-    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-    table.setRowSorter(sorter);
+    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(foundItemModel);
+    foundItemTable.setRowSorter(sorter);
 
     // Table Scroll
-    JScrollPane scrollPane = new JScrollPane(table);
+    JScrollPane scrollPane = new JScrollPane(foundItemTable);
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
     // Table Options
-    table.getColumnModel().getColumn(0).setMinWidth(40);
-    table.getColumnModel().getColumn(0).setMaxWidth(40);
-    table.getColumnModel().getColumn(7).setMinWidth(100);
-    table.getColumnModel().getColumn(7).setMaxWidth(100);
+    foundItemTable.getColumnModel().getColumn(0).setMinWidth(40);
+    foundItemTable.getColumnModel().getColumn(0).setMaxWidth(40);
+    foundItemTable.getColumnModel().getColumn(7).setMinWidth(100);
+    foundItemTable.getColumnModel().getColumn(7).setMaxWidth(100);
 
-    table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    table.getTableHeader().setReorderingAllowed(false);
+    foundItemTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    foundItemTable.getTableHeader().setReorderingAllowed(false);
 
     // Custom Cell Renderers
-    table
+    foundItemTable
         .getColumnModel()
         .getColumn(0)
         .setCellRenderer(
@@ -300,8 +303,8 @@ public class AdminPage extends JPanel {
                 super.setHorizontalAlignment(SwingConstants.CENTER);
               }
             });
-    table.getColumnModel().getColumn(5).setCellRenderer(new TableDateTimeCellRenderer());
-    table.getColumnModel().getColumn(7).setCellRenderer(new TableImageCellRenderer(table));
+    foundItemTable.getColumnModel().getColumn(5).setCellRenderer(new TableDateTimeCellRenderer());
+    foundItemTable.getColumnModel().getColumn(7).setCellRenderer(new TableImageCellRenderer(foundItemTable));
 
     JLabel title = new JLabel("Found Items");
 
@@ -315,7 +318,7 @@ public class AdminPage extends JPanel {
 
     // STYLES
     StyleManager.styleTablePanel(panel);
-    StyleManager.styleTable(table);
+    StyleManager.styleTable(foundItemTable);
     StyleManager.styleTitle(title);
     StyleManager.styleActionPanel(actionPanel);
     StyleManager.styleScrollPane(scrollPane);
@@ -323,19 +326,19 @@ public class AdminPage extends JPanel {
     StyleManager.styleSeparator(separator);
 
     // Actions
-    model.addTableModelListener(
+    foundItemModel.addTableModelListener(
         e -> {
-          title.setText("Found Items (" + table.getRowCount() + ")");
+          title.setText("Found Items (" + foundItemTable.getRowCount() + ")");
         });
 
-    table.addMouseListener(
+    foundItemTable.addMouseListener(
         new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
-            int selectedRow = table.getSelectedRow();
+            int selectedRow = foundItemTable.getSelectedRow();
 
             if (selectedRow != -1) {
-              int id = (int) table.getValueAt(selectedRow, 0);
+              int id = (int) foundItemTable.getValueAt(selectedRow, 0);
               selectedFoundItemId = id;
               System.out.println("Found ID: " + selectedFoundItemId);
             }
@@ -345,7 +348,7 @@ public class AdminPage extends JPanel {
     searchField
         .getDocument()
         .addDocumentListener(
-            new SearchFilterDocumentListener(table, sorter, title, "Found Items", searchField));
+            new SearchFilterDocumentListener(foundItemTable, sorter, title, "Found Items", searchField));
 
     viewButton.addActionListener(
         e -> {
@@ -386,7 +389,7 @@ public class AdminPage extends JPanel {
     panel.add(scrollPane);
 
     for (FoundItem item : foundItemDAO.getAllFoundItems()) {
-      model.addRow(
+      foundItemModel.addRow(
           new Object[] {
             item.getFoundItemId(),
             item.getItemType(),
@@ -430,6 +433,52 @@ public class AdminPage extends JPanel {
     return panel;
   }
 
+  private void refreshLostItemTable(DefaultTableModel model, JTable table) {
+    // Clear existing rows
+    model.setRowCount(0);
+
+    // Re-populate the table with updated data
+    for (LostItem item : lostItemDAO.getAllLostItems()) {
+        model.addRow(
+            new Object[] {
+                item.getLostItemId(),
+                item.getItemType(),
+                item.getItemSubtype(),
+                item.getItemDescription(),
+                item.getLocationDetails(),
+                item.getDateTimeLost(),
+                item.getStatus().toString(),
+                item.getImageIcon(80, 80, 3f)
+            });
+    }
+
+    table.getTableHeader().repaint();
+    table.repaint();
+}
+
+  private void refreshFoundItemTable(DefaultTableModel model, JTable table) {
+    // Clear existing rows
+    model.setRowCount(0);
+
+    // Re-populate the table with updated data
+    for (FoundItem item : foundItemDAO.getAllFoundItems()) {
+        model.addRow(
+            new Object[] {
+                item.getFoundItemId(),
+                item.getItemType(),
+                item.getItemSubtype(),
+                item.getItemDescription(),
+                item.getLocationDetails(),
+                item.getDateTimeFound(),
+                item.getStatus().toString(),
+                item.getImageIcon(80, 80, 3f)
+            });
+    }
+
+    table.getTableHeader().repaint();
+    table.repaint();
+}
+
   private void showItemFormViewModal(LostItem item) {
     Option option = ModalDialog.createOption().setBackgroundClickType(BackgroundClickType.BLOCK);
     option
@@ -471,12 +520,8 @@ public class AdminPage extends JPanel {
             SimpleModalBorder.OK_CANCEL_OPTION,
             (controller, action) -> {
               if (action == SimpleModalBorder.OK_OPTION) {
-                if (form.validateItemForm()) {
-                  LostItem updatedItem = form.getUpdatedLostItem(item);
-                  System.out.println(updatedItem.getItemPhotoPath());
-                  System.out.println(updatedItem.getItemDescription());
-                  System.out.println(updatedItem.getItemType());
-                  System.out.println(updatedItem.getReporterName());
+                if (form.updateLostItem(item)) {
+                  refreshLostItemTable(lostItemModel, lostItemTable);
                   showToast(Toast.Type.SUCCESS, "Lost Item Updated successfully");
                 } else {
                   // showToast(Toast.Type.ERROR, "Please put a proper values in the form");
@@ -505,14 +550,10 @@ public class AdminPage extends JPanel {
             form,
             "Update",
             SimpleModalBorder.OK_CANCEL_OPTION,
-            (controller, action) -> {
+           (controller, action) -> {
               if (action == SimpleModalBorder.OK_OPTION) {
-                if (form.validateItemForm()) {
-                  FoundItem updatedItem = form.getUpdatedLostItem(item);
-                  System.out.println(updatedItem.getItemPhotoPath());
-                  System.out.println(updatedItem.getItemDescription());
-                  System.out.println(updatedItem.getItemType());
-                  System.out.println(updatedItem.getReporterName());
+                if (form.updateFoundItem(item)) {
+                  refreshFoundItemTable(foundItemModel, foundItemTable);
                   showToast(Toast.Type.SUCCESS, "Found Item Updated successfully");
                 } else {
                   // showToast(Toast.Type.ERROR, "Please put a proper values in the form");
