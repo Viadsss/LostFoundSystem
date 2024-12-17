@@ -4,13 +4,18 @@ import com.appdev.logic.managers.ItemTypeManager;
 import com.appdev.logic.models.FoundItem;
 import com.appdev.logic.models.Item;
 import com.appdev.logic.models.LostItem;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
 
 /** Validates fields of Item, LostItem, and FoundItem models. */
 public class ItemValidator {
 
-  private static final int MAX_DESCRIPTION_LENGTH = 500;
-  private static final int MAX_LOCATION_LENGTH = 200;
+  private static final int MAX_DESCRIPTION_LENGTH = 255;
+  private static final int MAX_LOCATION_LENGTH = 255;
   private static final int MAX_NAME_LENGTH = 50;
 
   /**
@@ -97,7 +102,7 @@ public class ItemValidator {
    * @param itemType the type of the item.
    * @return true if valid, false otherwise.
    */
-  private boolean isValidItemType(String itemType) {
+  public boolean isValidItemType(String itemType) {
     // Ensure the itemType is not the placeholder "Choose Type"
     if ("Choose Type".equals(itemType)) {
       return false; // Invalid item type
@@ -119,7 +124,7 @@ public class ItemValidator {
    * @param itemSubtype the subtype of the item.
    * @return true if valid, false otherwise.
    */
-  private boolean isValidItemSubtype(String itemType, String itemSubtype) {
+  public boolean isValidItemSubtype(String itemType, String itemSubtype) {
     if (!isValidItemType(itemType)) {
       return false;
     }
@@ -147,7 +152,7 @@ public class ItemValidator {
    * @param description the description of the item.
    * @return true if valid, false otherwise.
    */
-  private boolean isValidDescription(String description) {
+  public boolean isValidDescription(String description) {
     return description != null
         && !description.isBlank()
         && description.length() <= MAX_DESCRIPTION_LENGTH;
@@ -159,7 +164,7 @@ public class ItemValidator {
    * @param locationDetails the location details.
    * @return true if valid, false otherwise.
    */
-  private boolean isValidLocationDetails(String locationDetails) {
+  public boolean isValidLocationDetails(String locationDetails) {
     return locationDetails != null
         && !locationDetails.isBlank()
         && locationDetails.length() <= MAX_LOCATION_LENGTH;
@@ -171,7 +176,7 @@ public class ItemValidator {
    * @param name the reporter's name.
    * @return true if valid, false otherwise.
    */
-  private boolean isValidReporterName(String name) {
+  public boolean isValidReporterName(String name) {
     if (name == null || name.isBlank() || name.length() < 2 || name.length() > MAX_NAME_LENGTH) {
       return false;
     }
@@ -185,7 +190,7 @@ public class ItemValidator {
    * @param email the reporter's email.
    * @return true if valid, false otherwise.
    */
-  private boolean isValidEmail(String email) {
+  public boolean isValidEmail(String email) {
     if (email == null || email.isBlank()) {
       return false;
     }
@@ -199,13 +204,37 @@ public class ItemValidator {
    * @param phone the reporter's phone number.
    * @return true if valid, false otherwise.
    */
-  private boolean isValidPhone(String phone) {
+  public boolean isValidPhone(String phone) {
     // Allow for null phone number
-    if (phone == null) {
+    if (phone == null || phone.isEmpty()) {
       return true; // If phone is null, it's valid
     }
 
     String phoneRegex = "^[0-9]{11}$"; // Ensures exactly 11 digits, and only digits
     return phone.matches(phoneRegex);
+  }
+
+  public boolean isValidDateField(String date) {
+    if (date == null || date.isEmpty()) return false;
+
+    try {
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+      LocalDate.parse(date, format);
+      return true;
+    } catch (DateTimeParseException e) {
+      return false;
+    }
+  }
+
+  public boolean isValidTimeField(String time) {
+    if (time == null || time.isEmpty()) return false;
+
+    try {
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
+      LocalTime.parse(time, format);
+      return true;
+    } catch (DateTimeParseException e) {
+      return false;
+    }
   }
 }
