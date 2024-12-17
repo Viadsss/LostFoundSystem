@@ -76,4 +76,17 @@ public class StyleManager {
   public static void styleSeparator(JSeparator separator) {
     separator.putClientProperty(FlatClientProperties.STYLE, "foreground:$Table.gridColor;");
   }
+
+  public static void styleInvalidField(JComponent component) {
+    component.putClientProperty(FlatClientProperties.OUTLINE, FlatClientProperties.OUTLINE_ERROR);
+  }
+
+  public static void styleResetField(JComponent component) {
+    component.putClientProperty(FlatClientProperties.OUTLINE, null);
+  }
+
+  public static void styleErrorMessagelabel(JLabel label) {
+    label.putClientProperty(
+        FlatClientProperties.STYLE, "foreground: #E53E4D; font: semibold $small.font;");
+  }
 }
