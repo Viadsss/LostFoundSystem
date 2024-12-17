@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.tinylog.Logger;
@@ -72,13 +73,40 @@ public class FoundItemDAO {
                 rs.getString("reporter_email"),
                 rs.getString("reporter_phone"),
                 FoundItem.Status.valueOf(rs.getString("status")),
-                rs.getTimestamp("createdAt").toLocalDateTime());        
-      }        
+                rs.getTimestamp("createdAt").toLocalDateTime());
+      }
 
     } catch (SQLException e) {
       Logger.error(e, "Error retrieving found item with ID {} from the database.", id);
     }
 
     return item;
-  }  
+  }
+
+  public void updateFoundItem(FoundItem item) {
+    String query =
+        "UPDATE found_items SET item_type = ?, item_subtype = ?, item_description = ?, location_details = ?, "
+            + "date_time_found = ?, item_photo_path = ?, reporter_name = ?, reporter_email = ?, reporter_phone = ?, "
+            + "status = ? WHERE found_item_id = ?";
+
+    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+      pstmt.setString(1, item.getItemType());
+      pstmt.setString(2, item.getItemSubtype());
+      pstmt.setString(3, item.getItemDescription());
+      pstmt.setString(4, item.getLocationDetails());
+      pstmt.setTimestamp(
+          5, Timestamp.valueOf(item.getDateTimeFound())); // Convert LocalDateTime to Timestamp
+      pstmt.setString(6, item.getItemPhotoPath());
+      pstmt.setString(7, item.getReporterName());
+      pstmt.setString(8, item.getReporterEmail());
+      pstmt.setString(9, item.getReporterPhone());
+      pstmt.setString(10, item.getStatus().name()); // Assuming Status is an enum
+      pstmt.setInt(11, item.getFoundItemId());
+
+      pstmt.executeUpdate();
+
+    } catch (SQLException e) {
+      Logger.error(e, "Error updating foundlost item with ID {} in the database.", item.getFoundItemId());
+    }
+  }
 }
