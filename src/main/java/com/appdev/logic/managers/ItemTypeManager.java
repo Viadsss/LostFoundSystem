@@ -23,6 +23,6 @@ public class ItemTypeManager {
 
   // Method to get the subtypes for a given item type
   public static String[] getSubtypesForType(String itemType) {
-    return itemSubtypesMap.getOrDefault(itemType, new String[] {});
+    return itemSubtypesMap.getOrDefault(itemType, new String[] {""});
   }
 }
