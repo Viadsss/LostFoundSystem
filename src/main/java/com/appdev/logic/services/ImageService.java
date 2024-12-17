@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import org.tinylog.Logger;
 
 public class ImageService {
@@ -13,6 +17,7 @@ public class ImageService {
   public static final String FOUND_ITEMS_PATH = "foundItems/";
   public static final String IDS_PATH = "ids/";
   public static final String PROFILES_PATH = "profiles/";
+  private static JFileChooser fileChooser;
 
   /**
    * Saves the image file to a specified directory with a new name based on the provided ID. Creates
@@ -42,6 +47,7 @@ public class ImageService {
 
       // Copy the file to the destination directory
       destinationFile = destinationDir.resolve(finalFileName);
+      System.out.println("Destination File:" + destinationFile);
       Files.copy(file.toPath(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
 
       return finalFileName;
@@ -50,4 +56,25 @@ public class ImageService {
       return null;
     }
   }
+
+    /**
+   * Opens a file chooser dialog to allow the user to select an image.
+   *
+   * @param parent - the parent component for the file chooser dialog.
+   * @return the selected file, or {@code null} if no file is selected.
+   */
+    public File selectImage(Component parent) {
+      if (fileChooser == null) {
+        fileChooser = new JFileChooser();
+        String userHome = System.getProperty("user.home");
+        String downloadsFolder = userHome + File.separator + "Downloads";
+        File downloadsDirectory = new File(downloadsFolder);
+        fileChooser.setDialogTitle("Choose an Image");
+        fileChooser.setCurrentDirectory(downloadsDirectory);
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Image File", "jpg", "jpeg", "png")); 
+      }
+
+        int returnValue = fileChooser.showOpenDialog(parent);
+        return returnValue == JFileChooser.APPROVE_OPTION ? fileChooser.getSelectedFile() : null;
+    }  
 }
