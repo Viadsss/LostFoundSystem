@@ -2,6 +2,7 @@ package com.appdev.presentation.components.table;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import javax.swing.table.DefaultTableCellRenderer;
 
 public class TableDateTimeCellRenderer extends DefaultTableCellRenderer {
@@ -10,7 +11,7 @@ public class TableDateTimeCellRenderer extends DefaultTableCellRenderer {
 
   // Constructor that accepts a custom format pattern
   public TableDateTimeCellRenderer(String pattern) {
-    this.formatter = DateTimeFormatter.ofPattern(pattern);
+    this.formatter = DateTimeFormatter.ofPattern(pattern, Locale.US);
   }
 
   // Default constructor with a common pattern
