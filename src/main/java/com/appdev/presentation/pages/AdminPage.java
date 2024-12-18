@@ -14,6 +14,8 @@ import com.appdev.presentation.components.table.TableImageCellRenderer;
 import com.formdev.flatlaf.FlatClientProperties;
 import java.awt.Component;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -164,17 +166,19 @@ public class AdminPage extends JPanel {
           title.setText("Lost Items (" + lostItemTable.getRowCount() + ")");
         });
 
-    lostItemTable.getSelectionModel().addListSelectionListener(event -> {
-        if (!event.getValueIsAdjusting()) {
-            int selectedRow = lostItemTable.getSelectedRow();
-            
-            if (selectedRow != -1) {
-                int id = (int) lostItemTable.getValueAt(selectedRow, 0);
-                selectedLostItemId = id;
-                System.out.println("Lost ID: " + selectedLostItemId);
-            }
-        }
-    });
+    lostItemTable
+        .getSelectionModel()
+        .addListSelectionListener(
+            event -> {
+              if (!event.getValueIsAdjusting()) {
+                int selectedRow = lostItemTable.getSelectedRow();
+
+                if (selectedRow != -1) {
+                  int id = (int) lostItemTable.getValueAt(selectedRow, 0);
+                  selectedLostItemId = id;
+                }
+              }
+            });
 
     searchField
         .getDocument()
@@ -334,18 +338,19 @@ public class AdminPage extends JPanel {
           title.setText("Found Items (" + foundItemTable.getRowCount() + ")");
         });
 
-    foundItemTable.getSelectionModel().addListSelectionListener(event -> {
-        if (!event.getValueIsAdjusting()) {
-            int selectedRow = foundItemTable.getSelectedRow();
-            
-            if (selectedRow != -1) {
-                int id = (int) foundItemTable.getValueAt(selectedRow, 0);
-                selectedFoundItemId = id;
-                System.out.println("Found ID: " + selectedFoundItemId);
-            }
-        }
-    });
+    foundItemTable
+        .getSelectionModel()
+        .addListSelectionListener(
+            event -> {
+              if (!event.getValueIsAdjusting()) {
+                int selectedRow = foundItemTable.getSelectedRow();
 
+                if (selectedRow != -1) {
+                  int id = (int) foundItemTable.getValueAt(selectedRow, 0);
+                  selectedFoundItemId = id;
+                }
+              }
+            });
 
     searchField
         .getDocument()
@@ -422,14 +427,27 @@ public class AdminPage extends JPanel {
                 "Matching Error",
                 JOptionPane.ERROR_MESSAGE);
           } else {
-            System.out.println("~~~~~~~~~~~~~");
-            System.out.println("MATCHED: ");
-            System.out.println("Lost Item ID: " + selectedLostItemId);
-            System.out.println("Found Item ID: " + selectedFoundItemId);
-            System.out.println();
-
             LostItem lostItem = lostItemDAO.getLostItemById(selectedLostItemId);
             FoundItem foundItem = foundItemDAO.getFoundItemById(selectedFoundItemId);
+
+            if (lostItem.getStatus() != LostItem.Status.PENDING) {
+              JOptionPane.showMessageDialog(
+                  this,
+                  "The selected Lost Item is not in a pending state. Please ensure that the item is pending before proceeding.",
+                  "Matching Error",
+                  JOptionPane.ERROR_MESSAGE);
+              return;
+            }
+
+            if (foundItem.getStatus() != FoundItem.Status.PENDING) {
+              JOptionPane.showMessageDialog(
+                  this,
+                  "The selected Found Item is not in a pending state. Please ensure that the item is pending before proceeding.",
+                  "Matching Error",
+                  JOptionPane.ERROR_MESSAGE);
+              return;
+            }
+
             showMatchItemFormViewModal(lostItem, foundItem);
           }
         });
@@ -538,11 +556,10 @@ public class AdminPage extends JPanel {
                   refreshLostItemTable(lostItemModel, lostItemTable);
                   showToast(Toast.Type.SUCCESS, "Lost Item Updated successfully");
                 } else {
-                  // showToast(Toast.Type.ERROR, "Please put a proper values in the form");
                   controller.consume();
                 }
               } else if (action == 1) {
-                System.out.println("Clicked CANCEL");
+                controller.close();
               }
             });
 
@@ -552,9 +569,14 @@ public class AdminPage extends JPanel {
   private void showItemFormUpdateModal(FoundItem item) {
     ItemFormUpdate form = new ItemFormUpdate(item);
 
-    SimpleModalBorder.Option[] customOptions = {
-      new SimpleModalBorder.Option("Update", 0), new SimpleModalBorder.Option("Cancel", 1)
-    };
+    List<SimpleModalBorder.Option> optionList = new ArrayList<>();
+    optionList.add(new SimpleModalBorder.Option("Update", 0));
+    if (item.getStatus() == FoundItem.Status.REPORTED) {
+      optionList.add(new SimpleModalBorder.Option("Mark as Pending", 1));
+    }
+    optionList.add(new SimpleModalBorder.Option("Cancel", 2));
+
+    SimpleModalBorder.Option[] customOptions = optionList.toArray(new SimpleModalBorder.Option[0]);
 
     Option option = ModalDialog.createOption();
     option
@@ -575,11 +597,27 @@ public class AdminPage extends JPanel {
                   refreshFoundItemTable(foundItemModel, foundItemTable);
                   showToast(Toast.Type.SUCCESS, "Found Item Updated successfully");
                 } else {
-                  // showToast(Toast.Type.ERROR, "Please put a proper values in the form");
                   controller.consume();
                 }
               } else if (action == 1) {
-                System.out.println("Clicked CANCEL");
+                controller.consume();
+                int result =
+                    JOptionPane.showConfirmDialog(
+                        this,
+                        "Are you sure you want to mark this item as Pending?",
+                        "Confirmation",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (result == JOptionPane.YES_OPTION) {
+                  foundItemDAO.updateFoundItemStatus(
+                      item.getFoundItemId(), FoundItem.Status.PENDING);
+                  refreshFoundItemTable(foundItemModel, foundItemTable);
+                  showToast(Toast.Type.SUCCESS, "Found Item status changed to Pending.");
+                  controller.close();
+                }
+
+              } else if (action == 2) {
+                controller.close();
               }
             });
 
