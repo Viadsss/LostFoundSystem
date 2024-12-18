@@ -109,4 +109,18 @@ public class FoundItemDAO {
           e, "Error updating foundlost item with ID {} in the database.", item.getFoundItemId());
     }
   }
+
+  public void updateFoundItemStatus(int foundItemId, FoundItem.Status status) {
+    String query = "UPDATE found_items SET status = ? WHERE found_item_id = ?";
+
+    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+      pstmt.setString(1, status.name());
+      pstmt.setInt(2, foundItemId);
+
+      pstmt.executeUpdate();
+    } catch (SQLException e) {
+      Logger.error(
+          e, "Error updating status of found item with ID {} in the database.", foundItemId);
+    }
+  }
 }
