@@ -166,19 +166,17 @@ public class AdminPage extends JPanel {
           title.setText("Lost Items (" + lostItemTable.getRowCount() + ")");
         });
 
-    lostItemTable.addMouseListener(
-        new MouseAdapter() {
-          @Override
-          public void mouseClicked(MouseEvent e) {
+    lostItemTable.getSelectionModel().addListSelectionListener(event -> {
+        if (!event.getValueIsAdjusting()) {
             int selectedRow = lostItemTable.getSelectedRow();
-
+            
             if (selectedRow != -1) {
-              int id = (int) lostItemTable.getValueAt(selectedRow, 0);
-              selectedLostItemId = id;
-              System.out.println("Lost ID: " + selectedLostItemId);
+                int id = (int) lostItemTable.getValueAt(selectedRow, 0);
+                selectedLostItemId = id;
+                System.out.println("Lost ID: " + selectedLostItemId);
             }
-          }
-        });
+        }
+    });
 
     searchField
         .getDocument()
@@ -338,19 +336,18 @@ public class AdminPage extends JPanel {
           title.setText("Found Items (" + foundItemTable.getRowCount() + ")");
         });
 
-    foundItemTable.addMouseListener(
-        new MouseAdapter() {
-          @Override
-          public void mouseClicked(MouseEvent e) {
+    foundItemTable.getSelectionModel().addListSelectionListener(event -> {
+        if (!event.getValueIsAdjusting()) {
             int selectedRow = foundItemTable.getSelectedRow();
-
+            
             if (selectedRow != -1) {
-              int id = (int) foundItemTable.getValueAt(selectedRow, 0);
-              selectedFoundItemId = id;
-              System.out.println("Found ID: " + selectedFoundItemId);
+                int id = (int) foundItemTable.getValueAt(selectedRow, 0);
+                selectedFoundItemId = id;
+                System.out.println("Found ID: " + selectedFoundItemId);
             }
-          }
-        });
+        }
+    });
+
 
     searchField
         .getDocument()
