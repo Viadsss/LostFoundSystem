@@ -25,7 +25,6 @@ import raven.modal.ModalDialog;
 import raven.modal.Toast;
 import raven.modal.component.SimpleModalBorder;
 import raven.modal.option.Location;
-import raven.modal.option.ModalBorderOption;
 import raven.modal.option.Option;
 import raven.modal.option.Option.BackgroundClickType;
 import raven.modal.toast.option.ToastLocation;
@@ -522,9 +521,8 @@ public class AdminPage extends JPanel {
     ItemFormUpdate form = new ItemFormUpdate(item);
 
     SimpleModalBorder.Option[] customOptions = {
-        new SimpleModalBorder.Option("Update", 0),
-        new SimpleModalBorder.Option("Cancel", 1)
-    };     
+      new SimpleModalBorder.Option("Update", 0), new SimpleModalBorder.Option("Cancel", 1)
+    };
 
     Option option = ModalDialog.createOption();
     option
@@ -558,10 +556,9 @@ public class AdminPage extends JPanel {
 
   private void showItemFormUpdateModal(FoundItem item) {
     ItemFormUpdate form = new ItemFormUpdate(item);
-    
+
     SimpleModalBorder.Option[] customOptions = {
-        new SimpleModalBorder.Option("Update", 0),
-        new SimpleModalBorder.Option("Cancel", 1)
+      new SimpleModalBorder.Option("Update", 0), new SimpleModalBorder.Option("Cancel", 1)
     };
 
     Option option = ModalDialog.createOption();
@@ -570,7 +567,7 @@ public class AdminPage extends JPanel {
         .getLayoutOption()
         .setSize(-1, 1f)
         .setLocation(Location.CENTER, Location.TOP)
-        .setAnimateDistance(0.7f, 0);     
+        .setAnimateDistance(0.7f, 0);
 
     SimpleModalBorder modal =
         new SimpleModalBorder(
@@ -598,9 +595,8 @@ public class AdminPage extends JPanel {
     MatchItemFormView form = new MatchItemFormView(lostItem, foundItem);
 
     SimpleModalBorder.Option[] customOptions = {
-        new SimpleModalBorder.Option("Match", 0),
-        new SimpleModalBorder.Option("Cancel", 1)
-    };   
+      new SimpleModalBorder.Option("Match", 0), new SimpleModalBorder.Option("Cancel", 1)
+    };
 
     Option option = ModalDialog.createOption();
     option
@@ -609,7 +605,6 @@ public class AdminPage extends JPanel {
         .setSize(-1, 1f)
         .setLocation(Location.CENTER, Location.TOP)
         .setAnimateDistance(0.7f, 0);
-        
 
     SimpleModalBorder modal =
         new SimpleModalBorder(
@@ -618,15 +613,15 @@ public class AdminPage extends JPanel {
             customOptions,
             (controller, action) -> {
               if (action == 0) {
-                  // refreshFoundItemTable(foundItemModel, foundItemTable);
-                  showToast(Toast.Type.SUCCESS, "Match Match");
+                // refreshFoundItemTable(foundItemModel, foundItemTable);
+                showToast(Toast.Type.SUCCESS, "Match Match");
               } else if (action == 1) {
                 System.out.println("Clicked CANCEL");
               }
             });
 
     ModalDialog.showModal(this, modal, option);
-  }  
+  }
 
   private void showToast(Toast.Type type, String message) {
     ToastStyle style = new ToastStyle();
