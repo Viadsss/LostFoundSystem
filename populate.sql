@@ -10,7 +10,7 @@ VALUES
 -- Populate the found_items table
 INSERT INTO found_items (item_type, item_subtype, item_description, location_details, date_time_found, item_photo_path, reporter_name, reporter_email, reporter_phone, status)
 VALUES
-('Electronics', 'Smartphone', 'Black iPhone 13 with a cracked screen', 'Lost and Found desk, Central Park', '2024-11-11 10:00:00', '4.jpg', 'Central Park Staff', 'staff@centralpark.com', '11223344551', 'REPORTED'),
+('Electronics', 'Smartphone', 'Black iPhone 13 with a cracked screen', 'Lost and Found desk, Central Park', '2024-11-11 10:00:00', '4.jpg', 'Central Park Staff', 'staff@centralpark.com', '11223344551', 'PENDING'),
 ('Accessories', 'Wallet', 'Brown leather wallet with some cash, no cards', 'Metro Station - Lost Items Office', '2024-12-02 09:00:00', '5.jpg', 'Metro Staff', 'lostandfound@metro.com', '22334455661', 'REPORTED'),
 ('Clothing', 'Scarf', 'Red wool scarf, brand new', 'Bench near Elm Street Coffee Shop', '2024-12-06 19:00:00', '6.jpg', 'Emma Brown', 'emma.brown@example.com', NULL, 'REPORTED');
 
