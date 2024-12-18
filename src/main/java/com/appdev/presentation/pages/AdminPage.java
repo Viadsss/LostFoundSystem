@@ -13,8 +13,6 @@ import com.appdev.presentation.components.table.TableDateTimeCellRenderer;
 import com.appdev.presentation.components.table.TableImageCellRenderer;
 import com.formdev.flatlaf.FlatClientProperties;
 import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
