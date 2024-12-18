@@ -13,7 +13,9 @@ public class MatchItemFormView extends JSplitPane {
 
     setLeftComponent(lostItemView);
     setRightComponent(foundItemView);
-    setDividerLocation(450);
     setOneTouchExpandable(true);
+    setContinuousLayout(true);
+    setResizeWeight(0.5);
+    setDividerSize(10);
   }
 }
