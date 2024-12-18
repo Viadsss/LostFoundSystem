@@ -7,6 +7,7 @@ import com.appdev.logic.models.FoundItem;
 import com.appdev.logic.models.LostItem;
 import com.appdev.presentation.components.forms.ItemFormUpdate;
 import com.appdev.presentation.components.forms.ItemFormView;
+import com.appdev.presentation.components.forms.MatchItemFormView;
 import com.appdev.presentation.components.table.SearchFilterDocumentListener;
 import com.appdev.presentation.components.table.TableDateTimeCellRenderer;
 import com.appdev.presentation.components.table.TableImageCellRenderer;
@@ -24,6 +25,7 @@ import raven.modal.ModalDialog;
 import raven.modal.Toast;
 import raven.modal.component.SimpleModalBorder;
 import raven.modal.option.Location;
+import raven.modal.option.ModalBorderOption;
 import raven.modal.option.Option;
 import raven.modal.option.Option.BackgroundClickType;
 import raven.modal.toast.option.ToastLocation;
@@ -431,6 +433,10 @@ public class AdminPage extends JPanel {
             System.out.println("Lost Item ID: " + selectedLostItemId);
             System.out.println("Found Item ID: " + selectedFoundItemId);
             System.out.println();
+
+            LostItem lostItem = lostItemDAO.getLostItemById(selectedLostItemId);
+            FoundItem foundItem = foundItemDAO.getFoundItemById(selectedFoundItemId);
+            showMatchItemFormViewModal(lostItem, foundItem);
           }
         });
 
@@ -487,8 +493,9 @@ public class AdminPage extends JPanel {
   }
 
   private void showItemFormViewModal(LostItem item) {
-    Option option = ModalDialog.createOption().setBackgroundClickType(BackgroundClickType.BLOCK);
+    Option option = ModalDialog.createOption();
     option
+        .setBackgroundClickType(BackgroundClickType.BLOCK)
         .getLayoutOption()
         .setSize(-1, 1f)
         .setLocation(Location.CENTER, Location.TOP)
@@ -499,8 +506,9 @@ public class AdminPage extends JPanel {
   }
 
   private void showItemFormViewModal(FoundItem item) {
-    Option option = ModalDialog.createOption().setBackgroundClickType(BackgroundClickType.BLOCK);
+    Option option = ModalDialog.createOption();
     option
+        .setBackgroundClickType(BackgroundClickType.BLOCK)
         .getLayoutOption()
         .setSize(-1, 1f)
         .setLocation(Location.CENTER, Location.TOP)
@@ -513,8 +521,14 @@ public class AdminPage extends JPanel {
   private void showItemFormUpdateModal(LostItem item) {
     ItemFormUpdate form = new ItemFormUpdate(item);
 
-    Option option = ModalDialog.createOption().setBackgroundClickType(BackgroundClickType.BLOCK);
+    SimpleModalBorder.Option[] customOptions = {
+        new SimpleModalBorder.Option("Update", 0),
+        new SimpleModalBorder.Option("Cancel", 1)
+    };     
+
+    Option option = ModalDialog.createOption();
     option
+        .setBackgroundClickType(BackgroundClickType.BLOCK)
         .getLayoutOption()
         .setSize(-1, 1f)
         .setLocation(Location.CENTER, Location.TOP)
@@ -524,9 +538,9 @@ public class AdminPage extends JPanel {
         new SimpleModalBorder(
             form,
             "Update",
-            SimpleModalBorder.OK_CANCEL_OPTION,
+            customOptions,
             (controller, action) -> {
-              if (action == SimpleModalBorder.OK_OPTION) {
+              if (action == 0) {
                 if (form.updateLostItem(item)) {
                   refreshLostItemTable(lostItemModel, lostItemTable);
                   showToast(Toast.Type.SUCCESS, "Lost Item Updated successfully");
@@ -534,7 +548,7 @@ public class AdminPage extends JPanel {
                   // showToast(Toast.Type.ERROR, "Please put a proper values in the form");
                   controller.consume();
                 }
-              } else if (action == SimpleModalBorder.CANCEL_OPTION) {
+              } else if (action == 1) {
                 System.out.println("Clicked CANCEL");
               }
             });
@@ -544,21 +558,27 @@ public class AdminPage extends JPanel {
 
   private void showItemFormUpdateModal(FoundItem item) {
     ItemFormUpdate form = new ItemFormUpdate(item);
+    
+    SimpleModalBorder.Option[] customOptions = {
+        new SimpleModalBorder.Option("Update", 0),
+        new SimpleModalBorder.Option("Cancel", 1)
+    };
 
-    Option option = ModalDialog.createOption().setBackgroundClickType(BackgroundClickType.BLOCK);
+    Option option = ModalDialog.createOption();
     option
+        .setBackgroundClickType(BackgroundClickType.BLOCK)
         .getLayoutOption()
         .setSize(-1, 1f)
         .setLocation(Location.CENTER, Location.TOP)
-        .setAnimateDistance(0.7f, 0);
+        .setAnimateDistance(0.7f, 0);     
 
     SimpleModalBorder modal =
         new SimpleModalBorder(
             form,
             "Update",
-            SimpleModalBorder.OK_CANCEL_OPTION,
+            customOptions,
             (controller, action) -> {
-              if (action == SimpleModalBorder.OK_OPTION) {
+              if (action == 0) {
                 if (form.updateFoundItem(item)) {
                   refreshFoundItemTable(foundItemModel, foundItemTable);
                   showToast(Toast.Type.SUCCESS, "Found Item Updated successfully");
@@ -566,13 +586,47 @@ public class AdminPage extends JPanel {
                   // showToast(Toast.Type.ERROR, "Please put a proper values in the form");
                   controller.consume();
                 }
-              } else if (action == SimpleModalBorder.CANCEL_OPTION) {
+              } else if (action == 1) {
                 System.out.println("Clicked CANCEL");
               }
             });
 
     ModalDialog.showModal(this, modal, option);
   }
+
+  private void showMatchItemFormViewModal(LostItem lostItem, FoundItem foundItem) {
+    MatchItemFormView form = new MatchItemFormView(lostItem, foundItem);
+
+    SimpleModalBorder.Option[] customOptions = {
+        new SimpleModalBorder.Option("Match", 0),
+        new SimpleModalBorder.Option("Cancel", 1)
+    };   
+
+    Option option = ModalDialog.createOption();
+    option
+        .setBackgroundClickType(BackgroundClickType.BLOCK)
+        .getLayoutOption()
+        .setSize(-1, 1f)
+        .setLocation(Location.CENTER, Location.TOP)
+        .setAnimateDistance(0.7f, 0);
+        
+
+    SimpleModalBorder modal =
+        new SimpleModalBorder(
+            form,
+            "Match",
+            customOptions,
+            (controller, action) -> {
+              if (action == 0) {
+                  // refreshFoundItemTable(foundItemModel, foundItemTable);
+                  showToast(Toast.Type.SUCCESS, "Match Match");
+              } else if (action == 1) {
+                System.out.println("Clicked CANCEL");
+              }
+            });
+
+    ModalDialog.showModal(this, modal, option);
+  }  
 
   private void showToast(Toast.Type type, String message) {
     ToastStyle style = new ToastStyle();
