@@ -2,6 +2,7 @@ package com.appdev.presentation.components.table;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.TableCellRenderer;
 
 public class TableImageCellRenderer extends JPanel implements TableCellRenderer {
@@ -37,11 +38,12 @@ public class TableImageCellRenderer extends JPanel implements TableCellRenderer 
     if (isSelected) {
       setBackground(table.getSelectionBackground());
       imageLabel.setBackground(table.getSelectionBackground());
+      setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, table.getSelectionBackground()));
     } else {
       setBackground(com.getBackground());
       imageLabel.setBackground(com.getBackground());
+      setBorder(new MatteBorder(0, 0, 1, 1, new Color(235, 235, 235)));
     }
-    setBorder(com.getBorder());
 
     return this;
   }
