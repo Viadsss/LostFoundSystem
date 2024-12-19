@@ -82,6 +82,7 @@ public class AdminPage extends JPanel {
           "Item Description",
           "Location Details",
           "Date & Time Lost",
+          "Reporter Name",
           "Status",
           "Photo"
         };
@@ -114,8 +115,8 @@ public class AdminPage extends JPanel {
     // Table Options
     lostItemTable.getColumnModel().getColumn(0).setMinWidth(40);
     lostItemTable.getColumnModel().getColumn(0).setMaxWidth(40);
-    lostItemTable.getColumnModel().getColumn(7).setMinWidth(100);
-    lostItemTable.getColumnModel().getColumn(7).setMaxWidth(100);
+    lostItemTable.getColumnModel().getColumn(8).setMinWidth(100);
+    lostItemTable.getColumnModel().getColumn(8).setMaxWidth(100);
 
     lostItemTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     lostItemTable.getTableHeader().setReorderingAllowed(false);
@@ -139,7 +140,7 @@ public class AdminPage extends JPanel {
     lostItemTable.getColumnModel().getColumn(5).setCellRenderer(new TableDateTimeCellRenderer());
     lostItemTable
         .getColumnModel()
-        .getColumn(7)
+        .getColumn(8)
         .setCellRenderer(new TableImageCellRenderer(lostItemTable));
 
     JLabel title = new JLabel("Lost Items");
@@ -236,6 +237,7 @@ public class AdminPage extends JPanel {
             item.getItemDescription(),
             item.getLocationDetails(),
             item.getDateTimeLost(),
+            item.getReporterName(),
             item.getStatus().toString(),
             item.getImageIcon(80, 80, 3f)
           });
@@ -257,6 +259,7 @@ public class AdminPage extends JPanel {
           "Item Description",
           "Location Details",
           "Date & Time Found",
+          "Reporter Name",
           "Status",
           "Photo"
         };
@@ -289,8 +292,8 @@ public class AdminPage extends JPanel {
     // Table Options
     foundItemTable.getColumnModel().getColumn(0).setMinWidth(40);
     foundItemTable.getColumnModel().getColumn(0).setMaxWidth(40);
-    foundItemTable.getColumnModel().getColumn(7).setMinWidth(100);
-    foundItemTable.getColumnModel().getColumn(7).setMaxWidth(100);
+    foundItemTable.getColumnModel().getColumn(8).setMinWidth(100);
+    foundItemTable.getColumnModel().getColumn(8).setMaxWidth(100);
 
     foundItemTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     foundItemTable.getTableHeader().setReorderingAllowed(false);
@@ -314,7 +317,7 @@ public class AdminPage extends JPanel {
     foundItemTable.getColumnModel().getColumn(5).setCellRenderer(new TableDateTimeCellRenderer());
     foundItemTable
         .getColumnModel()
-        .getColumn(7)
+        .getColumn(8)
         .setCellRenderer(new TableImageCellRenderer(foundItemTable));
 
     JLabel title = new JLabel("Found Items");
@@ -412,6 +415,7 @@ public class AdminPage extends JPanel {
             item.getItemDescription(),
             item.getLocationDetails(),
             item.getDateTimeFound(),
+            item.getReporterName(),
             item.getStatus().toString(),
             item.getImageIcon(80, 80, 3f)
           });

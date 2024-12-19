@@ -77,9 +77,15 @@ public class SearchFilterDocumentListener implements DocumentListener {
                 }
               }
 
+              if (text.startsWith("name:")) {
+                String typeSearchText = text.substring(5).trim();
+                String type = model.getValueAt(rowIndex, 6).toString().toLowerCase();
+                return type.contains(typeSearchText);
+              }              
+
               if (text.startsWith("status:")) {
                 String typeSearchText = text.substring(7).trim();
-                String type = model.getValueAt(rowIndex, 6).toString().toLowerCase();
+                String type = model.getValueAt(rowIndex, 7).toString().toLowerCase();
                 return type.contains(typeSearchText);
               }
 
@@ -125,8 +131,14 @@ public class SearchFilterDocumentListener implements DocumentListener {
                 }
               }
 
+              // Filter 'Reporter Name' column
+              String name = model.getValueAt(rowIndex, 6).toString().toLowerCase();
+              if (name.contains(text)) {
+                return true;
+              }              
+
               // Filter 'Status' column
-              String status = model.getValueAt(rowIndex, 6).toString().toLowerCase();
+              String status = model.getValueAt(rowIndex, 7).toString().toLowerCase();
               if (status.contains(text)) {
                 return true;
               }
