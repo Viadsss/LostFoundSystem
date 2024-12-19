@@ -81,7 +81,7 @@ public class SearchFilterDocumentListener implements DocumentListener {
                 String typeSearchText = text.substring(5).trim();
                 String type = model.getValueAt(rowIndex, 6).toString().toLowerCase();
                 return type.contains(typeSearchText);
-              }              
+              }
 
               if (text.startsWith("status:")) {
                 String typeSearchText = text.substring(7).trim();
@@ -135,7 +135,7 @@ public class SearchFilterDocumentListener implements DocumentListener {
               String name = model.getValueAt(rowIndex, 6).toString().toLowerCase();
               if (name.contains(text)) {
                 return true;
-              }              
+              }
 
               // Filter 'Status' column
               String status = model.getValueAt(rowIndex, 7).toString().toLowerCase();
