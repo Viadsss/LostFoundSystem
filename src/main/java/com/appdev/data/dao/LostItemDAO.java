@@ -108,4 +108,18 @@ public class LostItemDAO {
       Logger.error(e, "Error updating lost item with ID {} in the database.", item.getLostItemId());
     }
   }
+
+  public void updateLostItemStatus(int lostItemId, LostItem.Status status) {
+    String query = "UPDATE lost_items SET status = ? WHERE lost_item_id = ?";
+
+    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+      pstmt.setString(1, status.name());
+      pstmt.setInt(2, lostItemId);
+
+      pstmt.executeUpdate();
+    } catch (SQLException e) {
+      Logger.error(
+          e, "Error updating status of found item with ID {} in the database.", lostItemId);
+    }
+  }
 }
