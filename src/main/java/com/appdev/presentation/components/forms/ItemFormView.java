@@ -19,6 +19,7 @@ public class ItemFormView extends JScrollPane {
     setViewportView(panel);
     setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
     setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
+    getVerticalScrollBar().setUnitIncrement(16);
     init(item);
   }
 
@@ -27,6 +28,7 @@ public class ItemFormView extends JScrollPane {
     setViewportView(panel);
     setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
     setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
+    getVerticalScrollBar().setUnitIncrement(16);
     init(item);
   }
 

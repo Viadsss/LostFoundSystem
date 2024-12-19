@@ -1,9 +1,11 @@
 package com.appdev.presentation.pages;
 
+import com.appdev.logic.managers.PageManager;
 import com.appdev.logic.managers.StyleManager;
 import com.appdev.logic.models.FoundItem;
 import com.appdev.logic.models.LostItem;
 import com.appdev.logic.models.MatchItem;
+import com.appdev.logic.services.ImageService;
 import com.appdev.logic.services.ItemService;
 import com.appdev.presentation.components.forms.ItemFormUpdate;
 import com.appdev.presentation.components.forms.ItemFormView;
@@ -43,14 +45,14 @@ public class AdminPage extends JPanel {
   private DefaultTableModel lostItemModel, foundItemModel, matchItemModel;
   private JTable lostItemTable, foundItemTable, matchItemTable;
 
-  public AdminPage() {
-    init();
+  public AdminPage(boolean showMatch) {
+    init(showMatch);
   }
 
-  private void init() {
+  private void init(boolean showMatch) {
     setLayout(new MigLayout("fillx,wrap", "[fill]", "[][fill,grow]"));
     add(createInfo("Admin Page", 1));
-    add(createTab());
+    add(createTab(showMatch));
     add(createFooterAction());
   }
 
@@ -62,12 +64,17 @@ public class AdminPage extends JPanel {
     return panel;
   }
 
-  private Component createTab() {
+  private Component createTab(boolean showMatch) {
     JTabbedPane tabb = new JTabbedPane();
     tabb.putClientProperty(FlatClientProperties.STYLE, "" + "tabType:card");
     tabb.addTab("Lost Items", lostItemTable());
     tabb.addTab("Found Items", foundItemTable());
     tabb.addTab("Match Items", matchItemTable());
+
+    if (showMatch) {
+      tabb.setSelectedIndex(2);
+    }
+
     return tabb;
   }
 
@@ -472,6 +479,7 @@ public class AdminPage extends JPanel {
     JTextField searchField = new JTextField();
     JButton viewButton = new JButton("View");
     JButton verifyButton = new JButton("Verify");
+    JButton deleteButton = new JButton("Delete");
 
     JSeparator separator = new JSeparator();
 
@@ -486,6 +494,7 @@ public class AdminPage extends JPanel {
 
     viewButton.setIcon(new FlatSVGIcon("icons/view.svg", 0.8f));
     verifyButton.setIcon(new FlatSVGIcon("icons/verify.svg", 0.8f));
+    deleteButton.setIcon(new FlatSVGIcon("icons/delete.svg", 0.8f));
 
     // Actions
     matchItemModel.addTableModelListener(
@@ -530,8 +539,17 @@ public class AdminPage extends JPanel {
     verifyButton.addActionListener(
         e -> {
           if (selectedMatchItemId != -1) {
+            MatchItem item = itemService.getMatchItem(selectedMatchItemId);
+            if (item.getStatus() == MatchItem.Status.RESOLVED) {
+              JOptionPane.showMessageDialog(
+                  this,
+                  "The selected Match Item is already verified and resolved.",
+                  "Verifying Info",
+                  JOptionPane.INFORMATION_MESSAGE);
+              return;
+            }
             System.out.println("VERIFYING THIS ID: " + selectedMatchItemId);
-            System.out.println("GOING TO VERIFY PAGE");
+            PageManager.getInstance().showPage(new VerificationPage(item));
           } else {
             JOptionPane.showMessageDialog(
                 this,
@@ -541,10 +559,39 @@ public class AdminPage extends JPanel {
           }
         });
 
+    deleteButton.addActionListener(
+        e -> {
+          if (selectedMatchItemId != -1) {
+            ImageService imageService = new ImageService();
+            MatchItem item = itemService.getMatchItem(selectedMatchItemId);
+
+            int result =
+                JOptionPane.showConfirmDialog(
+                    this,
+                    "Are you sure you want to delete this match?",
+                    "Confirmation",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (result == JOptionPane.YES_OPTION) {
+              itemService.deleteMatchItem(item);
+              imageService.deleteImage(ImageService.IDS_PATH, item.getIdPhotoPath());
+              imageService.deleteImage(ImageService.PROFILES_PATH, item.getProfilePath());
+              refreshAllTables();
+            }
+          } else {
+            JOptionPane.showMessageDialog(
+                this,
+                "Please select a match item first on the table",
+                "Deleting Error",
+                JOptionPane.ERROR_MESSAGE);
+          }
+        });
+
     // Adding
     actionPanel.add(searchField);
     actionPanel.add(viewButton);
     actionPanel.add(verifyButton);
+    actionPanel.add(deleteButton);
 
     panel.add(title, "gapx 20");
     panel.add(actionPanel);
@@ -577,7 +624,7 @@ public class AdminPage extends JPanel {
           if (selectedLostItemId == -1 || selectedFoundItemId == -1) {
             JOptionPane.showMessageDialog(
                 this,
-                "Please select a row on both\ntables first before matching",
+                "Please select a row on both lost items table and found items table first before matching",
                 "Matching Error",
                 JOptionPane.ERROR_MESSAGE);
           } else {
@@ -684,6 +731,12 @@ public class AdminPage extends JPanel {
   }
 
   private void refreshAllTables() {
+    selectedLostItemId = -1;
+    selectedFoundItemId = -1;
+    selectedMatchItemId = -1;
+
+    
+
     refreshLostItemTable();
     refreshFoundItemTable();
     refreshMatchItemTable();
@@ -716,9 +769,6 @@ public class AdminPage extends JPanel {
   }
 
   private void showMatchItemFormViewModal(MatchItem item) {
-    LostItem lostItem = itemService.getLostItem(item.getLostItemId());
-    FoundItem foundItem = itemService.getFoundItem(item.getFoundItemId());
-
     Option option = ModalDialog.createOption();
     option
         .setBackgroundClickType(BackgroundClickType.BLOCK)
@@ -727,8 +777,7 @@ public class AdminPage extends JPanel {
         .setLocation(Location.CENTER, Location.TOP)
         .setAnimateDistance(0.7f, 0);
 
-    SimpleModalBorder modal =
-        new SimpleModalBorder(new MatchItemFormView(lostItem, foundItem), "View");
+    SimpleModalBorder modal = new SimpleModalBorder(new MatchItemFormView(item), "View");
     ModalDialog.showModal(this, modal, option);
   }
 
@@ -850,7 +899,7 @@ public class AdminPage extends JPanel {
               if (action == 0) {
                 itemService.addMatchItem(lostItem, foundItem);
                 refreshAllTables();
-                showToast(Toast.Type.SUCCESS, "Match Match");
+                showToast(Toast.Type.SUCCESS, "Matched the Items Successfully");
               } else if (action == 1) {
                 System.out.println("Clicked CANCEL");
               }

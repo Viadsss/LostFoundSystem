@@ -52,6 +52,7 @@ public class ItemFormUpdate extends JScrollPane {
     setViewportView(panel);
     setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
     setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
+    getVerticalScrollBar().setUnitIncrement(16);
     init(item);
   }
 
@@ -62,6 +63,7 @@ public class ItemFormUpdate extends JScrollPane {
     setViewportView(panel);
     setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
     setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
+    getVerticalScrollBar().setUnitIncrement(16);
     init(item);
   }
 
@@ -422,6 +424,7 @@ public class ItemFormUpdate extends JScrollPane {
         itemPhotoPath =
             imageService.saveImage(
                 this, selectedFile, ImageService.LOST_ITEMS_PATH, currentItem.getLostItemId());
+        imageService.deleteImage(ImageService.LOST_ITEMS_PATH, currentItem.getItemPhotoPath());
       }
 
       currentItem.setItemType(itemType);
@@ -482,6 +485,7 @@ public class ItemFormUpdate extends JScrollPane {
         itemPhotoPath =
             imageService.saveImage(
                 this, selectedFile, ImageService.FOUND_ITEMS_PATH, currentItem.getFoundItemId());
+        imageService.deleteImage(ImageService.FOUND_ITEMS_PATH, currentItem.getItemPhotoPath());
       }
 
       currentItem.setItemType(itemType);

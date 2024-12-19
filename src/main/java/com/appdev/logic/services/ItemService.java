@@ -76,6 +76,18 @@ public class ItemService {
   }
 
   public void updateFoundItemStatus(int id, FoundItem.Status status) {
-    foundItemDAO.updateFoundItemStatus(id, null);
+    foundItemDAO.updateFoundItemStatus(id, status);
+  }
+
+  public void updateMatchItem(MatchItem item) {
+    matchItemDAO.updateMatchItem(item);
+    lostItemDAO.updateLostItemStatus(item.getLostItemId(), LostItem.Status.RETURNED);
+    foundItemDAO.updateFoundItemStatus(item.getFoundItemId(), FoundItem.Status.RETURNED);
+  }
+
+  public void deleteMatchItem(MatchItem item) {
+    lostItemDAO.updateLostItemStatus(item.getLostItemId(), LostItem.Status.PENDING);
+    foundItemDAO.updateFoundItemStatus(item.getFoundItemId(), FoundItem.Status.PENDING);
+    matchItemDAO.deleteMatchItem(item.getMatchId());
   }
 }
