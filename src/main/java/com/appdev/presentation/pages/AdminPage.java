@@ -735,8 +735,6 @@ public class AdminPage extends JPanel {
     selectedFoundItemId = -1;
     selectedMatchItemId = -1;
 
-    
-
     refreshLostItemTable();
     refreshFoundItemTable();
     refreshMatchItemTable();
