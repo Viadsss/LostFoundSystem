@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import net.miginfocom.swing.MigLayout;
@@ -132,21 +131,7 @@ public class AdminPage extends JPanel {
     lostItemTable.getTableHeader().setReorderingAllowed(false);
 
     // Custom Cell Renderers
-    lostItemTable
-        .getColumnModel()
-        .getColumn(0)
-        .setCellRenderer(
-            new DefaultTableCellRenderer() {
-              @Override
-              protected void setValue(Object value) {
-                super.setValue(value);
-              }
-
-              @Override
-              public void setHorizontalAlignment(int alignment) {
-                super.setHorizontalAlignment(SwingConstants.CENTER);
-              }
-            });
+    lostItemTable.getColumnModel().getColumn(0).setCellRenderer(new TableIdCellRenderer());
     lostItemTable.getColumnModel().getColumn(5).setCellRenderer(new TableDateTimeCellRenderer());
     lostItemTable
         .getColumnModel()
@@ -312,21 +297,7 @@ public class AdminPage extends JPanel {
     foundItemTable.getTableHeader().setReorderingAllowed(false);
 
     // Custom Cell Renderers
-    foundItemTable
-        .getColumnModel()
-        .getColumn(0)
-        .setCellRenderer(
-            new DefaultTableCellRenderer() {
-              @Override
-              protected void setValue(Object value) {
-                super.setValue(value);
-              }
-
-              @Override
-              public void setHorizontalAlignment(int alignment) {
-                super.setHorizontalAlignment(SwingConstants.CENTER);
-              }
-            });
+    foundItemTable.getColumnModel().getColumn(0).setCellRenderer(new TableIdCellRenderer());
     foundItemTable.getColumnModel().getColumn(5).setCellRenderer(new TableDateTimeCellRenderer());
     foundItemTable
         .getColumnModel()
@@ -572,7 +543,7 @@ public class AdminPage extends JPanel {
                 "Verifying Error",
                 JOptionPane.ERROR_MESSAGE);
           }
-        });        
+        });
 
     // Adding
     actionPanel.add(searchField);
