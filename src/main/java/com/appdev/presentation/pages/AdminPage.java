@@ -1,12 +1,10 @@
 package com.appdev.presentation.pages;
 
-import com.appdev.data.dao.FoundItemDAO;
-import com.appdev.data.dao.LostItemDAO;
-import com.appdev.data.dao.MatchItemDAO;
 import com.appdev.logic.managers.StyleManager;
 import com.appdev.logic.models.FoundItem;
 import com.appdev.logic.models.LostItem;
 import com.appdev.logic.models.MatchItem;
+import com.appdev.logic.services.ItemService;
 import com.appdev.presentation.components.forms.ItemFormUpdate;
 import com.appdev.presentation.components.forms.ItemFormView;
 import com.appdev.presentation.components.forms.MatchItemFormView;
@@ -38,9 +36,7 @@ import raven.modal.toast.option.ToastStyle.BackgroundType;
 import raven.modal.toast.option.ToastStyle.BorderType;
 
 public class AdminPage extends JPanel {
-  private LostItemDAO lostItemDAO = new LostItemDAO();
-  private FoundItemDAO foundItemDAO = new FoundItemDAO();
-  private MatchItemDAO matchItemDAO = new MatchItemDAO();
+  private ItemService itemService = new ItemService();
   private int selectedLostItemId = -1;
   private int selectedFoundItemId = -1;
   private int selectedMatchItemId = -1;
@@ -189,7 +185,7 @@ public class AdminPage extends JPanel {
     viewButton.addActionListener(
         e -> {
           if (selectedLostItemId != -1) {
-            LostItem item = lostItemDAO.getLostItemById(selectedLostItemId);
+            LostItem item = itemService.getLostItem(selectedLostItemId);
             showItemFormViewModal(item);
           } else {
             JOptionPane.showMessageDialog(
@@ -202,7 +198,7 @@ public class AdminPage extends JPanel {
     updateButton.addActionListener(
         e -> {
           if (selectedLostItemId != -1) {
-            LostItem item = lostItemDAO.getLostItemById(selectedLostItemId);
+            LostItem item = itemService.getLostItem(selectedLostItemId);
             showItemFormUpdateModal(item);
           } else {
             JOptionPane.showMessageDialog(
@@ -223,7 +219,7 @@ public class AdminPage extends JPanel {
     panel.add(separator, "height 2");
     panel.add(scrollPane);
 
-    for (LostItem item : lostItemDAO.getAllLostItems()) {
+    for (LostItem item : itemService.getAllLostItems()) {
       lostItemModel.addRow(
           new Object[] {
             item.getLostItemId(),
@@ -355,7 +351,7 @@ public class AdminPage extends JPanel {
     viewButton.addActionListener(
         e -> {
           if (selectedFoundItemId != -1) {
-            FoundItem item = foundItemDAO.getFoundItemById(selectedFoundItemId);
+            FoundItem item = itemService.getFoundItem(selectedFoundItemId);
             showItemFormViewModal(item);
           } else {
             JOptionPane.showMessageDialog(
@@ -369,7 +365,7 @@ public class AdminPage extends JPanel {
     updateButton.addActionListener(
         e -> {
           if (selectedFoundItemId != -1) {
-            FoundItem item = foundItemDAO.getFoundItemById(selectedFoundItemId);
+            FoundItem item = itemService.getFoundItem(selectedFoundItemId);
             showItemFormUpdateModal(item);
           } else {
             JOptionPane.showMessageDialog(
@@ -390,7 +386,7 @@ public class AdminPage extends JPanel {
     panel.add(separator, "height 2");
     panel.add(scrollPane);
 
-    for (FoundItem item : foundItemDAO.getAllFoundItems()) {
+    for (FoundItem item : itemService.getAllFoundItems()) {
       foundItemModel.addRow(
           new Object[] {
             item.getFoundItemId(),
@@ -520,7 +516,7 @@ public class AdminPage extends JPanel {
     viewButton.addActionListener(
         e -> {
           if (selectedMatchItemId != -1) {
-            MatchItem item = matchItemDAO.getMatchItemById(selectedMatchItemId);
+            MatchItem item = itemService.getMatchItem(selectedMatchItemId);
             showMatchItemFormViewModal(item);
           } else {
             JOptionPane.showMessageDialog(
@@ -555,7 +551,7 @@ public class AdminPage extends JPanel {
     panel.add(separator, "height 2");
     panel.add(scrollPane);
 
-    for (MatchItem item : matchItemDAO.getAllMatchItems()) {
+    for (MatchItem item : itemService.getAllMatchItems()) {
       matchItemModel.addRow(
           new Object[] {
             item.getMatchId(),
@@ -585,8 +581,8 @@ public class AdminPage extends JPanel {
                 "Matching Error",
                 JOptionPane.ERROR_MESSAGE);
           } else {
-            LostItem lostItem = lostItemDAO.getLostItemById(selectedLostItemId);
-            FoundItem foundItem = foundItemDAO.getFoundItemById(selectedFoundItemId);
+            LostItem lostItem = itemService.getLostItem(selectedLostItemId);
+            FoundItem foundItem = itemService.getFoundItem(selectedFoundItemId);
 
             if (lostItem.getStatus() != LostItem.Status.PENDING) {
               JOptionPane.showMessageDialog(
@@ -624,7 +620,7 @@ public class AdminPage extends JPanel {
     lostItemModel.setRowCount(0);
 
     // Re-populate the table with updated data
-    for (LostItem item : lostItemDAO.getAllLostItems()) {
+    for (LostItem item : itemService.getAllLostItems()) {
       lostItemModel.addRow(
           new Object[] {
             item.getLostItemId(),
@@ -648,7 +644,7 @@ public class AdminPage extends JPanel {
     foundItemModel.setRowCount(0);
 
     // Re-populate the table with updated data
-    for (FoundItem item : foundItemDAO.getAllFoundItems()) {
+    for (FoundItem item : itemService.getAllFoundItems()) {
       foundItemModel.addRow(
           new Object[] {
             item.getFoundItemId(),
@@ -667,9 +663,30 @@ public class AdminPage extends JPanel {
     foundItemTable.repaint();
   }
 
+  private void refreshMatchItemTable() {
+    matchItemModel.setRowCount(0);
+
+    for (MatchItem item : itemService.getAllMatchItems()) {
+      matchItemModel.addRow(
+          new Object[] {
+            item.getMatchId(),
+            item.getLostItemId(),
+            item.getFoundItemId(),
+            item.getCreatedAt(),
+            item.getStatus().toString(),
+            item.getIdPhotoIcon(80, 80, 3f),
+            item.getProfileIcon(80, 80, 3f)
+          });
+    }
+
+    matchItemTable.getTableHeader().repaint();
+    matchItemTable.repaint();
+  }
+
   private void refreshAllTables() {
     refreshLostItemTable();
     refreshFoundItemTable();
+    refreshMatchItemTable();
   }
 
   private void showItemFormViewModal(LostItem item) {
@@ -699,8 +716,8 @@ public class AdminPage extends JPanel {
   }
 
   private void showMatchItemFormViewModal(MatchItem item) {
-    LostItem lostItem = lostItemDAO.getLostItemById(item.getLostItemId());
-    FoundItem foundItem = foundItemDAO.getFoundItemById(item.getFoundItemId());
+    LostItem lostItem = itemService.getLostItem(item.getLostItemId());
+    FoundItem foundItem = itemService.getFoundItem(item.getFoundItemId());
 
     Option option = ModalDialog.createOption();
     option
@@ -794,9 +811,9 @@ public class AdminPage extends JPanel {
                         JOptionPane.YES_NO_OPTION);
 
                 if (result == JOptionPane.YES_OPTION) {
-                  foundItemDAO.updateFoundItemStatus(
+                  itemService.updateFoundItemStatus(
                       item.getFoundItemId(), FoundItem.Status.PENDING);
-                      refreshAllTables();
+                  refreshAllTables();
                   showToast(Toast.Type.SUCCESS, "Found Item status changed to Pending.");
                   controller.close();
                 }
@@ -831,6 +848,7 @@ public class AdminPage extends JPanel {
             customOptions,
             (controller, action) -> {
               if (action == 0) {
+                itemService.addMatchItem(lostItem, foundItem);
                 refreshAllTables();
                 showToast(Toast.Type.SUCCESS, "Match Match");
               } else if (action == 1) {

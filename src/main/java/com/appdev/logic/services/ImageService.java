@@ -33,7 +33,6 @@ public class ImageService {
       Path destinationDir = Path.of("imgs/" + directory);
       if (!Files.exists(destinationDir)) {
         Files.createDirectories(destinationDir);
-        System.out.println("Created directory: " + destinationDir);
       }
 
       String originalFileName = file.getName();
@@ -45,7 +44,6 @@ public class ImageService {
 
       // Copy the file to the destination directory
       destinationFile = destinationDir.resolve(finalFileName);
-      System.out.println("Destination File:" + destinationFile);
       Files.copy(file.toPath(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
 
       return finalFileName;
