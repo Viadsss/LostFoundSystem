@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS found_items (
     item_description TEXT NOT NULL,
     location_details TEXT NOT NULL COMMENT 'Approximate or estimated location details',
     date_time_found DATETIME NOT NULL COMMENT 'Approximate or estimated date and time found',
-    item_photo_path VARCHAR(255) DEFAULT NULL,
+    item_photo_path VARCHAR(255) NOT NULL,
     reporter_name VARCHAR(255) NOT NULL,
     reporter_email VARCHAR(255) NOT NULL,
     reporter_phone VARCHAR(20) DEFAULT NULL,
