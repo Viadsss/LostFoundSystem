@@ -1,6 +1,8 @@
 package com.appdev.logic.models;
 
 import java.time.LocalDateTime;
+import javax.swing.Icon;
+import raven.extras.AvatarIcon;
 
 public class MatchItem {
   private int matchId;
@@ -87,5 +89,19 @@ public class MatchItem {
 
   public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public Icon getProfileIcon(int width, int height, float round) {
+    final String PHOTO_FOLDER = "imgs/profiles/";
+    AvatarIcon icon = new AvatarIcon(PHOTO_FOLDER + this.getProfilePath(), width, height, round);
+    icon.setType(AvatarIcon.Type.MASK_SQUIRCLE);
+    return icon;
+  }
+
+  public Icon getIdPhotoIcon(int width, int height, float round) {
+    final String PHOTO_FOLDER = "imgs/ids/";
+    AvatarIcon icon = new AvatarIcon(PHOTO_FOLDER + this.getIdPhotoPath(), width, height, round);
+    icon.setType(AvatarIcon.Type.MASK_SQUIRCLE);
+    return icon;
   }
 }
