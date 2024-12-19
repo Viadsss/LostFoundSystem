@@ -619,9 +619,9 @@ public class AdminPage extends JPanel {
     return panel;
   }
 
-  private void refreshLostItemTable(DefaultTableModel model, JTable table) {
+  private void refreshLostItemTable() {
     // Clear existing rows
-    model.setRowCount(0);
+    lostItemModel.setRowCount(0);
 
     // Re-populate the table with updated data
     for (LostItem item : lostItemDAO.getAllLostItems()) {
@@ -639,13 +639,13 @@ public class AdminPage extends JPanel {
           });
     }
 
-    table.getTableHeader().repaint();
-    table.repaint();
+    lostItemTable.getTableHeader().repaint();
+    lostItemTable.repaint();
   }
 
-  private void refreshFoundItemTable(DefaultTableModel model, JTable table) {
+  private void refreshFoundItemTable() {
     // Clear existing rows
-    model.setRowCount(0);
+    foundItemModel.setRowCount(0);
 
     // Re-populate the table with updated data
     for (FoundItem item : foundItemDAO.getAllFoundItems()) {
@@ -663,8 +663,13 @@ public class AdminPage extends JPanel {
           });
     }
 
-    table.getTableHeader().repaint();
-    table.repaint();
+    foundItemTable.getTableHeader().repaint();
+    foundItemTable.repaint();
+  }
+
+  private void refreshAllTables() {
+    refreshLostItemTable();
+    refreshFoundItemTable();
   }
 
   private void showItemFormViewModal(LostItem item) {
@@ -733,7 +738,7 @@ public class AdminPage extends JPanel {
             (controller, action) -> {
               if (action == 0) {
                 if (form.updateLostItem(item)) {
-                  refreshLostItemTable(lostItemModel, lostItemTable);
+                  refreshAllTables();
                   showToast(Toast.Type.SUCCESS, "Lost Item Updated successfully");
                 } else {
                   controller.consume();
@@ -774,7 +779,7 @@ public class AdminPage extends JPanel {
             (controller, action) -> {
               if (action == 0) {
                 if (form.updateFoundItem(item)) {
-                  refreshFoundItemTable(foundItemModel, foundItemTable);
+                  refreshAllTables();
                   showToast(Toast.Type.SUCCESS, "Found Item Updated successfully");
                 } else {
                   controller.consume();
@@ -791,7 +796,7 @@ public class AdminPage extends JPanel {
                 if (result == JOptionPane.YES_OPTION) {
                   foundItemDAO.updateFoundItemStatus(
                       item.getFoundItemId(), FoundItem.Status.PENDING);
-                  refreshFoundItemTable(foundItemModel, foundItemTable);
+                      refreshAllTables();
                   showToast(Toast.Type.SUCCESS, "Found Item status changed to Pending.");
                   controller.close();
                 }
@@ -826,7 +831,7 @@ public class AdminPage extends JPanel {
             customOptions,
             (controller, action) -> {
               if (action == 0) {
-                // refreshFoundItemTable(foundItemModel, foundItemTable);
+                refreshAllTables();
                 showToast(Toast.Type.SUCCESS, "Match Match");
               } else if (action == 1) {
                 System.out.println("Clicked CANCEL");
