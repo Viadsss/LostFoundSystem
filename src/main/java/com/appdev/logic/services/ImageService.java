@@ -54,6 +54,31 @@ public class ImageService {
   }
 
   /**
+   * Deletes an image file based on its file name.
+   *
+   * @param directory - the directory where the file is located (e.g., "lostItems", "foundItems").
+   * @param fileName - the name of the file to be deleted.
+   * @return {@code true} if the file is successfully deleted, {@code false} otherwise.
+   */
+  public boolean deleteImage(String directory, String fileName) {
+    try {
+      Path filePath = Path.of("imgs/" + directory, fileName);
+
+      if (Files.exists(filePath)) {
+        Files.delete(filePath);
+        Logger.info("Image file {} in directory {} successfully deleted.", fileName, directory);
+        return true;
+      } else {
+        Logger.warn("Image file {} not found in directory {}.", fileName, directory);
+        return false;
+      }
+    } catch (IOException e) {
+      Logger.error(e, "Error deleting image file {} in directory {}.", fileName, directory);
+      return false;
+    }
+  }
+
+  /**
    * Opens a file chooser dialog to allow the user to select an image.
    *
    * @param parent - the parent component for the file chooser dialog.
@@ -68,6 +93,7 @@ public class ImageService {
       fileChooser.setDialogTitle("Choose an Image");
       fileChooser.setCurrentDirectory(downloadsDirectory);
       fileChooser.setFileFilter(new FileNameExtensionFilter("Image File", "jpg", "jpeg", "png"));
+      fileChooser.setAcceptAllFileFilterUsed(false);
     }
 
     int returnValue = fileChooser.showOpenDialog(parent);
