@@ -70,4 +70,20 @@ public class MatchItemDAO {
 
     return item;
   }
+
+  public void addMatchItem(int lostItemId, int foundItemId) {
+    String query = "INSERT INTO match_items (lost_item_id, found_item_id) VALUES (?, ?)";
+
+    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+      pstmt.setInt(1, lostItemId);
+      pstmt.setInt(2, foundItemId);
+      pstmt.executeUpdate();
+    } catch (SQLException e) {
+      Logger.error(
+          e,
+          "Error adding match item with lost item ID {} and found item ID {}",
+          lostItemId,
+          foundItemId);
+    }
+  }
 }
