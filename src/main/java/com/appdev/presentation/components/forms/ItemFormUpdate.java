@@ -11,7 +11,6 @@ import com.appdev.presentation.components.labels.ErrorLabel;
 import com.appdev.presentation.components.labels.RequiredLabel;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -97,11 +96,12 @@ public class ItemFormUpdate extends JScrollPane {
     emailField = new JTextField();
     phoneField = new JTextField();
 
-    nameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Enter your name (e.g., John D. Smith)");
+    nameField.putClientProperty(
+        FlatClientProperties.PLACEHOLDER_TEXT, "Enter your name (e.g., John D. Smith)");
     emailField.putClientProperty(
         FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("icons/email.svg", 0.6f));
     phoneField.putClientProperty(
-        FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("icons/phone.svg", 0.6f));    
+        FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("icons/phone.svg", 0.6f));
 
     // Error labels for various fields
     itemTypeErrorLabel = new ErrorLabel("Item type is required and cannot be 'Choose Type'.");
@@ -253,11 +253,12 @@ public class ItemFormUpdate extends JScrollPane {
     emailField = new JTextField();
     phoneField = new JTextField();
 
-    nameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Enter your name (e.g., John D. Smith)");
+    nameField.putClientProperty(
+        FlatClientProperties.PLACEHOLDER_TEXT, "Enter your name (e.g., John D. Smith)");
     emailField.putClientProperty(
         FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("icons/email.svg", 0.6f));
     phoneField.putClientProperty(
-        FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("icons/phone.svg", 0.6f));    
+        FlatClientProperties.TEXT_FIELD_LEADING_ICON, new FlatSVGIcon("icons/phone.svg", 0.6f));
 
     // Error labels for various fields
     itemTypeErrorLabel = new ErrorLabel("Item type is required and cannot be 'Choose Type'.");

@@ -12,6 +12,7 @@ import com.appdev.presentation.components.table.SearchFilterDocumentListener;
 import com.appdev.presentation.components.table.TableDateTimeCellRenderer;
 import com.appdev.presentation.components.table.TableImageCellRenderer;
 import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.awt.Component;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -159,6 +160,9 @@ public class AdminPage extends JPanel {
     StyleManager.styleScrollPane(scrollPane);
     StyleManager.styleSearchField(searchField);
     StyleManager.styleSeparator(separator);
+
+    viewButton.setIcon(new FlatSVGIcon("icons/view.svg", 0.8f));
+    updateButton.setIcon(new FlatSVGIcon("icons/update.svg", 0.8f));
 
     // Actions
     lostItemModel.addTableModelListener(
@@ -332,6 +336,9 @@ public class AdminPage extends JPanel {
     StyleManager.styleSearchField(searchField);
     StyleManager.styleSeparator(separator);
 
+    viewButton.setIcon(new FlatSVGIcon("icons/view.svg", 0.8f));
+    updateButton.setIcon(new FlatSVGIcon("icons/update.svg", 0.8f));
+
     // Actions
     foundItemModel.addTableModelListener(
         e -> {
@@ -454,6 +461,9 @@ public class AdminPage extends JPanel {
 
     panel.add(infoButton);
     panel.add(matchButton);
+
+    infoButton.setIcon(new FlatSVGIcon("icons/info.svg", 0.8f));
+    matchButton.setIcon(new FlatSVGIcon("icons/match.svg", 0.8f));
 
     return panel;
   }
