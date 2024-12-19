@@ -86,4 +86,37 @@ public class MatchItemDAO {
           foundItemId);
     }
   }
+
+  public void updateMatchItem(MatchItem item) {
+    String query =
+        "UPDATE match_items SET lost_item_id = ?, found_item_id = ?, id_photo_path = ?, "
+            + "profile_path = ?, status = ? WHERE match_id = ?";
+
+    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+      pstmt.setInt(1, item.getLostItemId());
+      pstmt.setInt(2, item.getFoundItemId());
+      pstmt.setString(3, item.getIdPhotoPath());
+      pstmt.setString(4, item.getProfilePath());
+      pstmt.setString(5, item.getStatus().name());
+      pstmt.setInt(6, item.getMatchId());
+
+      pstmt.executeUpdate();
+
+    } catch (SQLException e) {
+      Logger.error(e, "Error updating match item with ID {} in the database.", item.getMatchId());
+    }
+  }
+
+  public void deleteMatchItem(int matchId) {
+    String query = "DELETE FROM match_items WHERE match_id = ?";
+
+    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+      pstmt.setInt(1, matchId);
+
+      pstmt.executeUpdate();
+
+    } catch (SQLException e) {
+      Logger.error(e, "Error deleting match item with ID {} from the database.", matchId);
+    }
+  }
 }
