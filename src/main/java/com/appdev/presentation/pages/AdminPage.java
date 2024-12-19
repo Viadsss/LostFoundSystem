@@ -115,6 +115,9 @@ public class AdminPage extends JPanel {
     // Table Options
     lostItemTable.getColumnModel().getColumn(0).setMinWidth(40);
     lostItemTable.getColumnModel().getColumn(0).setMaxWidth(40);
+    lostItemTable.getColumnModel().getColumn(5).setPreferredWidth(130);
+    lostItemTable.getColumnModel().getColumn(7).setMaxWidth(100);
+    lostItemTable.getColumnModel().getColumn(7).setMinWidth(100);
     lostItemTable.getColumnModel().getColumn(8).setMinWidth(100);
     lostItemTable.getColumnModel().getColumn(8).setMaxWidth(100);
 
@@ -292,6 +295,9 @@ public class AdminPage extends JPanel {
     // Table Options
     foundItemTable.getColumnModel().getColumn(0).setMinWidth(40);
     foundItemTable.getColumnModel().getColumn(0).setMaxWidth(40);
+    foundItemTable.getColumnModel().getColumn(5).setPreferredWidth(130);
+    foundItemTable.getColumnModel().getColumn(7).setMaxWidth(100);
+    foundItemTable.getColumnModel().getColumn(7).setMinWidth(100);
     foundItemTable.getColumnModel().getColumn(8).setMinWidth(100);
     foundItemTable.getColumnModel().getColumn(8).setMaxWidth(100);
 
