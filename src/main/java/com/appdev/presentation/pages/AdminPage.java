@@ -625,7 +625,7 @@ public class AdminPage extends JPanel {
 
     // Re-populate the table with updated data
     for (LostItem item : lostItemDAO.getAllLostItems()) {
-      model.addRow(
+      lostItemModel.addRow(
           new Object[] {
             item.getLostItemId(),
             item.getItemType(),
@@ -633,6 +633,7 @@ public class AdminPage extends JPanel {
             item.getItemDescription(),
             item.getLocationDetails(),
             item.getDateTimeLost(),
+            item.getReporterName(),
             item.getStatus().toString(),
             item.getImageIcon(80, 80, 3f)
           });
@@ -648,7 +649,7 @@ public class AdminPage extends JPanel {
 
     // Re-populate the table with updated data
     for (FoundItem item : foundItemDAO.getAllFoundItems()) {
-      model.addRow(
+      foundItemModel.addRow(
           new Object[] {
             item.getFoundItemId(),
             item.getItemType(),
@@ -656,6 +657,7 @@ public class AdminPage extends JPanel {
             item.getItemDescription(),
             item.getLocationDetails(),
             item.getDateTimeFound(),
+            item.getReporterName(),
             item.getStatus().toString(),
             item.getImageIcon(80, 80, 3f)
           });

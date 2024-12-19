@@ -53,7 +53,6 @@ public class ItemFormUpdate extends JScrollPane {
     setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
     setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
     init(item);
-    currentPhotoPath = item.getItemPhotoPath();
   }
 
   public ItemFormUpdate(FoundItem item) {
@@ -64,7 +63,6 @@ public class ItemFormUpdate extends JScrollPane {
     setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
     setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
     init(item);
-    currentPhotoPath = item.getItemPhotoPath();
   }
 
   private void init(LostItem item) {
@@ -582,15 +580,15 @@ public class ItemFormUpdate extends JScrollPane {
   }
 
   private boolean validatePhoto() {
-    boolean ok = selectedFile != null && currentPhotoPath != null && !currentPhotoPath.isEmpty();
+    boolean isVisible = photoLabel.isVisible();
 
-    if (ok) {
+    if (isVisible) {
       setFieldValid(photoLabel, photoErrorLabel);
     } else {
       setFieldInvalid(photoLabel, photoErrorLabel);
     }
 
-    return ok;
+    return isVisible;
   }
 
   private boolean validateNameField() {
@@ -739,7 +737,6 @@ public class ItemFormUpdate extends JScrollPane {
   private JLabel photoLabel;
   private JTextField nameField, emailField, phoneField;
   private File selectedFile;
-  private String currentPhotoPath;
   private JButton photoButton, clearButton;
   private Timer debounceTimer;
 
