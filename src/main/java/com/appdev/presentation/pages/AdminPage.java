@@ -2,14 +2,18 @@ package com.appdev.presentation.pages;
 
 import com.appdev.data.dao.FoundItemDAO;
 import com.appdev.data.dao.LostItemDAO;
+import com.appdev.data.dao.MatchItemDAO;
 import com.appdev.logic.managers.StyleManager;
 import com.appdev.logic.models.FoundItem;
 import com.appdev.logic.models.LostItem;
+import com.appdev.logic.models.MatchItem;
 import com.appdev.presentation.components.forms.ItemFormUpdate;
 import com.appdev.presentation.components.forms.ItemFormView;
 import com.appdev.presentation.components.forms.MatchItemFormView;
+import com.appdev.presentation.components.table.MatchSearchFilterDocumentListener;
 import com.appdev.presentation.components.table.SearchFilterDocumentListener;
 import com.appdev.presentation.components.table.TableDateTimeCellRenderer;
+import com.appdev.presentation.components.table.TableIdCellRenderer;
 import com.appdev.presentation.components.table.TableImageCellRenderer;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -37,10 +41,12 @@ import raven.modal.toast.option.ToastStyle.BorderType;
 public class AdminPage extends JPanel {
   private LostItemDAO lostItemDAO = new LostItemDAO();
   private FoundItemDAO foundItemDAO = new FoundItemDAO();
+  private MatchItemDAO matchItemDAO = new MatchItemDAO();
   private int selectedLostItemId = -1;
   private int selectedFoundItemId = -1;
-  private DefaultTableModel lostItemModel, foundItemModel;
-  private JTable lostItemTable, foundItemTable;
+  private int selectedMatchItemId = -1;
+  private DefaultTableModel lostItemModel, foundItemModel, matchItemModel;
+  private JTable lostItemTable, foundItemTable, matchItemTable;
 
   public AdminPage() {
     init();
@@ -66,6 +72,7 @@ public class AdminPage extends JPanel {
     tabb.putClientProperty(FlatClientProperties.STYLE, "" + "tabType:card");
     tabb.addTab("Lost Items", lostItemTable());
     tabb.addTab("Found Items", foundItemTable());
+    tabb.addTab("Match Items", matchItemTable());
     return tabb;
   }
 
@@ -430,6 +437,169 @@ public class AdminPage extends JPanel {
     return panel;
   }
 
+  private Component matchItemTable() {
+    JPanel panel =
+        new JPanel(new MigLayout("fillx,wrap,insets 10 0 10 0", "[fill]", "[][][]0[fill,grow]"));
+
+    // Table Model
+    Object columns[] =
+        new Object[] {
+          "ID",
+          "Lost Item ID",
+          "Found Item ID",
+          "Match Date & Time",
+          "Status",
+          "Verification ID Photo",
+          "Profile Photo"
+        };
+    matchItemModel =
+        new DefaultTableModel(columns, 0) {
+          @Override
+          public boolean isCellEditable(int row, int column) {
+            return false;
+          }
+
+          @Override
+          public Class<?> getColumnClass(int columnIndex) {
+            if (columnIndex == 0) return Integer.class;
+            if (columnIndex == 1) return Integer.class;
+            if (columnIndex == 2) return Integer.class;
+            if (columnIndex == 3) return LocalDateTime.class;
+            return super.getColumnClass(columnIndex);
+          }
+        };
+
+    // Table
+    matchItemTable = new JTable(matchItemModel);
+
+    // Table Sorter
+    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(matchItemModel);
+    matchItemTable.setRowSorter(sorter);
+
+    // Table Scroll
+    JScrollPane scrollPane = new JScrollPane(matchItemTable);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+    // Table Options
+    matchItemTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    matchItemTable.getTableHeader().setReorderingAllowed(false);
+
+    // Custom Cell Renderers
+    matchItemTable.getColumnModel().getColumn(0).setCellRenderer(new TableIdCellRenderer());
+    matchItemTable.getColumnModel().getColumn(1).setCellRenderer(new TableIdCellRenderer());
+    matchItemTable.getColumnModel().getColumn(2).setCellRenderer(new TableIdCellRenderer());
+    matchItemTable.getColumnModel().getColumn(3).setCellRenderer(new TableDateTimeCellRenderer());
+    matchItemTable
+        .getColumnModel()
+        .getColumn(5)
+        .setCellRenderer(new TableImageCellRenderer(matchItemTable));
+    matchItemTable
+        .getColumnModel()
+        .getColumn(6)
+        .setCellRenderer(new TableImageCellRenderer(matchItemTable));
+
+    JLabel title = new JLabel("Match Items");
+
+    // create header
+    JPanel actionPanel = new JPanel(new MigLayout("insets 5 20 5 20", "[fill,230]push[][]"));
+    JTextField searchField = new JTextField();
+    JButton viewButton = new JButton("View");
+    JButton verifyButton = new JButton("Verify");
+
+    JSeparator separator = new JSeparator();
+
+    // STYLES
+    StyleManager.styleTablePanel(panel);
+    StyleManager.styleTable(matchItemTable);
+    StyleManager.styleTitle(title);
+    StyleManager.styleActionPanel(actionPanel);
+    StyleManager.styleScrollPane(scrollPane);
+    StyleManager.styleSearchField(searchField);
+    StyleManager.styleSeparator(separator);
+
+    viewButton.setIcon(new FlatSVGIcon("icons/view.svg", 0.8f));
+    verifyButton.setIcon(new FlatSVGIcon("icons/verify.svg", 0.8f));
+
+    // Actions
+    matchItemModel.addTableModelListener(
+        e -> {
+          title.setText("Match Items (" + matchItemTable.getRowCount() + ")");
+        });
+
+    searchField
+        .getDocument()
+        .addDocumentListener(
+            new MatchSearchFilterDocumentListener(
+                matchItemTable, sorter, title, "Match Items", searchField));
+
+    matchItemTable
+        .getSelectionModel()
+        .addListSelectionListener(
+            event -> {
+              if (!event.getValueIsAdjusting()) {
+                int selectedRow = matchItemTable.getSelectedRow();
+
+                if (selectedRow != -1) {
+                  int id = (int) matchItemTable.getValueAt(selectedRow, 0);
+                  selectedMatchItemId = id;
+                }
+              }
+            });
+
+    viewButton.addActionListener(
+        e -> {
+          if (selectedMatchItemId != -1) {
+            MatchItem item = matchItemDAO.getMatchItemById(selectedMatchItemId);
+            showMatchItemFormViewModal(item);
+          } else {
+            JOptionPane.showMessageDialog(
+                this,
+                "Please select a match item first on the table",
+                "Viewing Error",
+                JOptionPane.ERROR_MESSAGE);
+          }
+        });
+
+    verifyButton.addActionListener(
+        e -> {
+          if (selectedMatchItemId != -1) {
+            System.out.println("VERIFYING THIS ID: " + selectedMatchItemId);
+            System.out.println("GOING TO VERIFY PAGE");
+          } else {
+            JOptionPane.showMessageDialog(
+                this,
+                "Please select a match item first on the table",
+                "Verifying Error",
+                JOptionPane.ERROR_MESSAGE);
+          }
+        });        
+
+    // Adding
+    actionPanel.add(searchField);
+    actionPanel.add(viewButton);
+    actionPanel.add(verifyButton);
+
+    panel.add(title, "gapx 20");
+    panel.add(actionPanel);
+    panel.add(separator, "height 2");
+    panel.add(scrollPane);
+
+    for (MatchItem item : matchItemDAO.getAllMatchItems()) {
+      matchItemModel.addRow(
+          new Object[] {
+            item.getMatchId(),
+            item.getLostItemId(),
+            item.getFoundItemId(),
+            item.getCreatedAt(),
+            item.getStatus().toString(),
+            item.getIdPhotoIcon(80, 80, 3f),
+            item.getProfileIcon(80, 80, 3f)
+          });
+    }
+
+    return panel;
+  }
+
   private Component createFooterAction() {
     JPanel panel = new JPanel(new MigLayout("", "[grow, center]", "[grow]"));
     JButton infoButton = new JButton("Info");
@@ -547,6 +717,23 @@ public class AdminPage extends JPanel {
         .setAnimateDistance(0.7f, 0);
 
     SimpleModalBorder modal = new SimpleModalBorder(new ItemFormView(item), "View");
+    ModalDialog.showModal(this, modal, option);
+  }
+
+  private void showMatchItemFormViewModal(MatchItem item) {
+    LostItem lostItem = lostItemDAO.getLostItemById(item.getLostItemId());
+    FoundItem foundItem = foundItemDAO.getFoundItemById(item.getFoundItemId());
+
+    Option option = ModalDialog.createOption();
+    option
+        .setBackgroundClickType(BackgroundClickType.BLOCK)
+        .getLayoutOption()
+        .setSize(-1, 1f)
+        .setLocation(Location.CENTER, Location.TOP)
+        .setAnimateDistance(0.7f, 0);
+
+    SimpleModalBorder modal =
+        new SimpleModalBorder(new MatchItemFormView(lostItem, foundItem), "View");
     ModalDialog.showModal(this, modal, option);
   }
 
