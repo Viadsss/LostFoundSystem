@@ -25,17 +25,6 @@ public class ItemValidator {
    * @return true if valid, false otherwise.
    */
   public boolean isValidItem(Item item) {
-    System.out.println("Valid item type? " + isValidItemType(item.getItemType()));
-    System.out.println(
-        "Valid item subtype? " + isValidItemSubtype(item.getItemType(), item.getItemSubtype()));
-    System.out.println("Valid description? " + isValidDescription(item.getItemDescription()));
-    System.out.println(
-        "Valid location details? " + isValidLocationDetails(item.getLocationDetails()));
-    System.out.println("Valid reporter name? " + isValidReporterName(item.getReporterName()));
-    System.out.println("Valid email? " + isValidEmail(item.getReporterEmail()));
-    System.out.println("Valid phone number? " + isValidPhone(item.getReporterPhone()));
-    System.out.println("CreatedAt not null? " + item.getCreatedAt() != null);
-
     return isValidItemType(item.getItemType())
         && isValidItemSubtype(item.getItemType(), item.getItemSubtype())
         && isValidDescription(item.getItemDescription())
@@ -53,13 +42,6 @@ public class ItemValidator {
    * @return true if valid, false otherwise.
    */
   public boolean isValidLostItem(LostItem lostItem) {
-    System.out.println("Valid item? " + isValidItem(lostItem));
-    System.out.println("Valid LostItem ID? " + isValidItemId(lostItem.getLostItemId()));
-    System.out.println("DateTimeLost not null? " + lostItem.getDateTimeLost() != null);
-    System.out.println(
-        "DateTimeLost is before now? " + lostItem.getDateTimeLost() != null
-            && lostItem.getDateTimeLost().isBefore(LocalDateTime.now()));
-
     return isValidItem(lostItem)
         && isValidItemId(lostItem.getLostItemId())
         && lostItem.getDateTimeLost() != null
@@ -73,13 +55,6 @@ public class ItemValidator {
    * @return true if valid, false otherwise.
    */
   public boolean isValidFoundItem(FoundItem foundItem) {
-    System.out.println("Valid item? " + isValidItem(foundItem));
-    System.out.println("Valid FoundItem ID? " + isValidItemId(foundItem.getFoundItemId()));
-    System.out.println("DateTimeFound not null " + foundItem.getDateTimeFound() != null);
-    System.out.println(
-        "DateTimeFound is before now? " + foundItem.getDateTimeFound() != null
-            && foundItem.getDateTimeFound().isBefore(LocalDateTime.now()));
-
     return isValidItem(foundItem)
         && isValidItemId(foundItem.getFoundItemId())
         && foundItem.getDateTimeFound() != null
