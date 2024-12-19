@@ -88,6 +88,7 @@ public class ItemFormUpdate extends JScrollPane {
     timePicker.setOrientation(SwingConstants.HORIZONTAL);
 
     photoButton = new JButton("Choose Photo");
+    clearButton = new JButton("Clear");
     photoLabel = new JLabel(new AvatarIcon("", 350, 350, 0));
 
     nameField = new JTextField();
@@ -142,7 +143,8 @@ public class ItemFormUpdate extends JScrollPane {
     panel.add(dateTimeErrorLabel);
 
     panel.add(new JLabel("Item Photo"), "gapy 5 0");
-    panel.add(photoButton);
+    panel.add(photoButton, "split 2");
+    panel.add(clearButton);
     panel.add(photoLabel, "gapy 0 20");
 
     createTitle("Reporter Information");
@@ -169,9 +171,16 @@ public class ItemFormUpdate extends JScrollPane {
             System.out.println("Selected File: " + selectedFile.getAbsolutePath());
             Icon newPhoto = new AvatarIcon(selectedFile.getAbsolutePath(), 350, 350, 0);
             photoLabel.setIcon(newPhoto);
+            photoLabel.setVisible(true);
           } else {
             System.out.println("No file selected.");
           }
+        });
+    clearButton.addActionListener(
+        e -> {
+          selectedFile = null;
+          photoLabel.setIcon(new AvatarIcon("", 350, 350, 0));
+          photoLabel.setVisible(false);
         });
 
     itemTypeBox.addItemListener(new ItemTypeListener());
@@ -196,7 +205,11 @@ public class ItemFormUpdate extends JScrollPane {
     itemLocationArea.setText(item.getLocationDetails());
     datePicker.setSelectedDate(item.getDateTimeLost().toLocalDate());
     timePicker.setSelectedTime(item.getDateTimeLost().toLocalTime());
-    photoLabel.setIcon(item.getImageIcon(350, 350, 0));
+    if (item.getItemPhotoPath() == null) {
+      photoLabel.setVisible(false);
+    } else {
+      photoLabel.setIcon(item.getImageIcon(350, 350, 0));
+    }
 
     nameField.setText(item.getReporterName());
     emailField.setText(item.getReporterEmail());
@@ -225,6 +238,7 @@ public class ItemFormUpdate extends JScrollPane {
     timePicker.setOrientation(SwingConstants.HORIZONTAL);
 
     photoButton = new JButton("Choose Photo");
+    clearButton = new JButton("Clear");
     photoLabel = new JLabel(new AvatarIcon("", 350, 350, 0));
 
     nameField = new JTextField();
@@ -281,9 +295,10 @@ public class ItemFormUpdate extends JScrollPane {
     panel.add(timeField);
     panel.add(dateTimeErrorLabel);
 
-    panel.add(new JLabel("Item Photo"), "gapy 5 0");
+    panel.add(new RequiredLabel("Item Photo"), "gapy 5 0");
     panel.add(photoErrorLabel);
-    panel.add(photoButton);
+    panel.add(photoButton, "split 2");
+    panel.add(clearButton);
     panel.add(photoLabel, "gapy 0 20");
 
     createTitle("Reporter Information");
@@ -307,12 +322,20 @@ public class ItemFormUpdate extends JScrollPane {
           selectedFile = imageService.selectImage(this);
 
           if (selectedFile != null) {
+            setFieldValid(photoLabel, photoErrorLabel);
             System.out.println("Selected File: " + selectedFile.getAbsolutePath());
             Icon newPhoto = new AvatarIcon(selectedFile.getAbsolutePath(), 350, 350, 0);
             photoLabel.setIcon(newPhoto);
+            photoLabel.setVisible(true);
           } else {
             System.out.println("No file selected.");
           }
+        });
+    clearButton.addActionListener(
+        e -> {
+          selectedFile = null;
+          photoLabel.setIcon(new AvatarIcon("", 350, 350, 0));
+          photoLabel.setVisible(false);
         });
 
     itemTypeBox.addItemListener(new ItemTypeListener());
@@ -337,7 +360,11 @@ public class ItemFormUpdate extends JScrollPane {
     itemLocationArea.setText(item.getLocationDetails());
     datePicker.setSelectedDate(item.getDateTimeFound().toLocalDate());
     timePicker.setSelectedTime(item.getDateTimeFound().toLocalTime());
-    photoLabel.setIcon(item.getImageIcon(350, 350, 0));
+    if (item.getItemPhotoPath() == null) {
+      photoLabel.setVisible(false);
+    } else {
+      photoLabel.setIcon(item.getImageIcon(350, 350, 0));
+    }
 
     nameField.setText(item.getReporterName());
     emailField.setText(item.getReporterEmail());
@@ -373,7 +400,7 @@ public class ItemFormUpdate extends JScrollPane {
       String reporterPhone = phoneField.getText().trim();
 
       if (selectedFile == null) {
-        itemPhotoPath = currentItem.getItemPhotoPath();
+        itemPhotoPath = null;
       } else {
         itemPhotoPath =
             imageService.saveImage(
@@ -540,7 +567,15 @@ public class ItemFormUpdate extends JScrollPane {
   }
 
   private boolean validatePhoto() {
-    return currentPhotoPath != null && !currentPhotoPath.isEmpty();
+    boolean ok = selectedFile != null && currentPhotoPath != null && !currentPhotoPath.isEmpty();
+
+    if (ok) {
+      setFieldValid(photoLabel, photoErrorLabel);
+    } else {
+      setFieldInvalid(photoLabel, photoErrorLabel);
+    }
+
+    return ok;
   }
 
   private boolean validateNameField() {
@@ -690,7 +725,7 @@ public class ItemFormUpdate extends JScrollPane {
   private JTextField nameField, emailField, phoneField;
   private File selectedFile;
   private String currentPhotoPath;
-  private JButton photoButton;
+  private JButton photoButton, clearButton;
   private Timer debounceTimer;
 
   private JLabel itemTypeErrorLabel,
