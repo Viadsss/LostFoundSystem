@@ -412,13 +412,17 @@ public class ItemFormUpdate extends JScrollPane {
       String reporterEmail = emailField.getText().trim();
       String reporterPhone = phoneField.getText().trim();
 
+
       if (selectedFile == null) {
-        itemPhotoPath = null;
+        if (photoLabel.isVisible()) {
+          itemPhotoPath = currentItem.getItemPhotoPath();
+        } else {
+          itemPhotoPath = null;
+        }
       } else {
-        itemPhotoPath =
-            imageService.saveImage(
-                this, selectedFile, ImageService.LOST_ITEMS_PATH, currentItem.getLostItemId());
-      }
+          itemPhotoPath = imageService.saveImage(
+              this, selectedFile, ImageService.LOST_ITEMS_PATH, currentItem.getLostItemId());
+      }      
 
       currentItem.setItemType(itemType);
       currentItem.setItemSubtype(itemSubtype);
