@@ -7,6 +7,9 @@ import com.appdev.logic.models.LostItem;
 import com.appdev.logic.models.MatchItem;
 import com.appdev.logic.services.ImageService;
 import com.appdev.logic.services.ItemService;
+import com.appdev.logic.services.MatchService;
+import com.appdev.logic.services.MatchService.MatchResult;
+import com.appdev.logic.services.MatchService.MatchingMode;
 import com.appdev.presentation.components.forms.ItemFormUpdate;
 import com.appdev.presentation.components.forms.ItemFormView;
 import com.appdev.presentation.components.forms.MatchItemFormView;
@@ -15,12 +18,14 @@ import com.appdev.presentation.components.table.SearchFilterDocumentListener;
 import com.appdev.presentation.components.table.TableDateTimeCellRenderer;
 import com.appdev.presentation.components.table.TableIdCellRenderer;
 import com.appdev.presentation.components.table.TableImageCellRenderer;
+import com.appdev.presentation.components.table.TablePercentageCellRenderer;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.awt.Component;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
@@ -39,11 +44,13 @@ import raven.modal.toast.option.ToastStyle.BorderType;
 
 public class AdminPage extends JPanel {
   private ItemService itemService = new ItemService();
+  private MatchService matchService = new MatchService();
   private int selectedLostItemId = -1;
   private int selectedFoundItemId = -1;
   private int selectedMatchItemId = -1;
-  private DefaultTableModel lostItemModel, foundItemModel, matchItemModel;
-  private JTable lostItemTable, foundItemTable, matchItemTable;
+  private int[] selectedPotentialMatchItemIds = {-1, -1};
+  private DefaultTableModel lostItemModel, foundItemModel, matchItemModel, potentialMatchModel;
+  private JTable lostItemTable, foundItemTable, matchItemTable, potentialMatchTable;
 
   public AdminPage(boolean showMatch) {
     init(showMatch);
@@ -70,6 +77,7 @@ public class AdminPage extends JPanel {
     tabb.addTab("Lost Items", lostItemTable());
     tabb.addTab("Found Items", foundItemTable());
     tabb.addTab("Match Items", matchItemTable());
+    tabb.add("Potential Matches", potentialMatchTable());
 
     if (showMatch) {
       tabb.setSelectedIndex(2);
@@ -455,6 +463,8 @@ public class AdminPage extends JPanel {
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
     // Table Options
+    matchItemTable.getColumnModel().getColumn(3).setPreferredWidth(130);
+
     matchItemTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     matchItemTable.getTableHeader().setReorderingAllowed(false);
 
@@ -614,9 +624,161 @@ public class AdminPage extends JPanel {
     return panel;
   }
 
+  private Component potentialMatchTable() {
+    matchService.setMatchingMode(MatchingMode.SAME_TYPE);
+    Map<LostItem, List<MatchResult>> potentialMatches =
+        matchService.matchLostAndFoundItems(
+            itemService.getAllLostItemsDescending(), itemService.getAllFoundItems());
+    matchService.printMatches(potentialMatches);
+
+    JPanel panel =
+        new JPanel(new MigLayout("fillx,wrap,insets 10 0 10 0", "[fill]", "[][][]0[fill,grow]"));
+
+    // Table Model
+    Object columns[] =
+        new Object[] {
+          "Lost Item ID",
+          "Found Item ID",
+          "Lost Item Description",
+          "Found Item Description",
+          "Similarity",
+          "Lost Item Photo",
+          "Found Item Photo"
+        };
+
+    potentialMatchModel =
+        new DefaultTableModel(columns, 0) {
+          @Override
+          public boolean isCellEditable(int row, int column) {
+            return false;
+          }
+
+          @Override
+          public Class<?> getColumnClass(int columnIndex) {
+            if (columnIndex == 0) return Integer.class;
+            if (columnIndex == 1) return Integer.class;
+            if (columnIndex == 4) return Double.class;
+            return super.getColumnClass(columnIndex);
+          }
+        };
+
+    // Table
+    potentialMatchTable = new JTable(potentialMatchModel);
+
+    // Table sorter
+    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(potentialMatchModel);
+    potentialMatchTable.setRowSorter(sorter);
+
+    // Table Scroll
+    JScrollPane scrollPane = new JScrollPane(potentialMatchTable);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+    // Table Options
+    potentialMatchTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    potentialMatchTable.getTableHeader().setReorderingAllowed(false);
+
+    // Custom cell Renderers
+    potentialMatchTable.getColumnModel().getColumn(0).setCellRenderer(new TableIdCellRenderer());
+    potentialMatchTable.getColumnModel().getColumn(1).setCellRenderer(new TableIdCellRenderer());
+    potentialMatchTable
+        .getColumnModel()
+        .getColumn(4)
+        .setCellRenderer(new TablePercentageCellRenderer());
+    potentialMatchTable
+        .getColumnModel()
+        .getColumn(5)
+        .setCellRenderer(new TableImageCellRenderer(potentialMatchTable));
+    potentialMatchTable
+        .getColumnModel()
+        .getColumn(6)
+        .setCellRenderer(new TableImageCellRenderer(potentialMatchTable));
+
+    JLabel title = new JLabel("Potential Match");
+
+    // create header
+    JPanel actionPanel = new JPanel(new MigLayout("fillx, wrap, insets 5 20 5 20", ""));
+    JButton approveButton = new JButton("Approve");
+
+    JSeparator separator = new JSeparator();
+
+    // STYLES
+    StyleManager.styleTablePanel(panel);
+    StyleManager.styleTable(potentialMatchTable);
+    StyleManager.styleTitle(title);
+    StyleManager.styleActionPanel(actionPanel);
+    StyleManager.styleScrollPane(scrollPane);
+    StyleManager.styleSeparator(separator);
+
+    approveButton.setIcon(new FlatSVGIcon("icons/approve.svg", 0.8f));
+
+    // Actions
+    matchItemModel.addTableModelListener(
+        e -> {
+          title.setText("Potential Matches (" + potentialMatchTable.getRowCount() + ")");
+        });
+
+    potentialMatchTable
+        .getSelectionModel()
+        .addListSelectionListener(
+            event -> {
+              if (!event.getValueIsAdjusting()) {
+                int selectedRow = potentialMatchTable.getSelectedRow();
+
+                if (selectedRow != -1) {
+                  int lostId = (int) potentialMatchTable.getValueAt(selectedRow, 0);
+                  int foundId = (int) potentialMatchTable.getValueAt(selectedRow, 1);
+                  selectedPotentialMatchItemIds = new int[] {lostId, foundId};
+                }
+              }
+            });
+
+    approveButton.addActionListener(
+        e -> {
+          if (selectedPotentialMatchItemIds[0] != -1 && selectedPotentialMatchItemIds[1] != -1) {
+            LostItem lostItem = itemService.getLostItem(selectedPotentialMatchItemIds[0]);
+            FoundItem foundItem = itemService.getFoundItem(selectedPotentialMatchItemIds[1]);
+            showMatchItemFormViewModal(lostItem, foundItem);
+          } else {
+            JOptionPane.showMessageDialog(
+                this,
+                "Please select a potential match first on the table",
+                "Approve Matching Error",
+                JOptionPane.ERROR_MESSAGE);
+          }
+        });
+
+    actionPanel.add(approveButton, "gapleft push");
+
+    panel.add(title, "gapx 20");
+    panel.add(actionPanel);
+    panel.add(separator, "height 2");
+    panel.add(scrollPane);
+
+    for (Map.Entry<LostItem, List<MatchResult>> entry : potentialMatches.entrySet()) {
+      LostItem lostItem = entry.getKey();
+      for (MatchResult matchResult : entry.getValue()) {
+        FoundItem foundItem = matchResult.getFoundItem();
+        Object[] row =
+            new Object[] {
+              lostItem.getLostItemId(),
+              foundItem.getFoundItemId(),
+              lostItem.getItemDescription(),
+              foundItem.getItemDescription(),
+              matchResult.getSimilarity(),
+              lostItem.getImageIcon(80, 80, 3f),
+              foundItem.getImageIcon(80, 80, 3f)
+            };
+        potentialMatchModel.addRow(row);
+      }
+    }
+
+    return panel;
+  }
+
   private Component createFooterAction() {
     JPanel panel = new JPanel(new MigLayout("", "[grow, center]", "[grow]"));
     JButton infoButton = new JButton("Info");
+    JButton refreshButton = new JButton("Refresh");
     JButton matchButton = new JButton("Match");
 
     matchButton.addActionListener(
@@ -653,7 +815,16 @@ public class AdminPage extends JPanel {
           }
         });
 
-    panel.add(infoButton);
+    refreshButton.addActionListener(
+        e -> {
+          refreshAllTables();
+        });
+
+    JPanel pane = new JPanel();
+    pane.add(infoButton);
+    pane.add(refreshButton);
+
+    panel.add(pane);
     panel.add(matchButton);
 
     infoButton.setIcon(new FlatSVGIcon("icons/info.svg", 0.8f));
@@ -730,14 +901,45 @@ public class AdminPage extends JPanel {
     matchItemTable.repaint();
   }
 
+  private void refreshPotentialMatchTable() {
+    potentialMatchModel.setRowCount(0);
+
+    Map<LostItem, List<MatchResult>> potentialMatch =
+        matchService.matchLostAndFoundItems(
+            itemService.getAllLostItemsDescending(), itemService.getAllFoundItems());
+
+    for (Map.Entry<LostItem, List<MatchResult>> entry : potentialMatch.entrySet()) {
+      LostItem lostItem = entry.getKey();
+      for (MatchResult matchResult : entry.getValue()) {
+        FoundItem foundItem = matchResult.getFoundItem();
+        Object[] row =
+            new Object[] {
+              lostItem.getLostItemId(),
+              foundItem.getFoundItemId(),
+              lostItem.getItemDescription(),
+              foundItem.getItemDescription(),
+              matchResult.getSimilarity(),
+              lostItem.getImageIcon(80, 80, 3f),
+              foundItem.getImageIcon(80, 80, 3f)
+            };
+        potentialMatchModel.addRow(row);
+      }
+    }
+
+    potentialMatchTable.getTableHeader().repaint();
+    potentialMatchTable.repaint();
+  }
+
   private void refreshAllTables() {
     selectedLostItemId = -1;
     selectedFoundItemId = -1;
     selectedMatchItemId = -1;
+    selectedPotentialMatchItemIds = new int[] {-1, -1};
 
     refreshLostItemTable();
     refreshFoundItemTable();
     refreshMatchItemTable();
+    refreshPotentialMatchTable();
   }
 
   private void showItemFormViewModal(LostItem item) {
