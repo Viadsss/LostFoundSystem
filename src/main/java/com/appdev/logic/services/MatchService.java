@@ -10,6 +10,13 @@ import org.apache.commons.text.similarity.JaccardSimilarity;
 
 public class MatchService {
   private static final double MATCH_THRESHOLD = 0.8;
+  private MatchingMode currentMode = MatchingMode.SAME_TYPE; // Default mode
+
+  public enum MatchingMode {
+    SAME_TYPE,
+    SAME_TYPE_AND_SUBTYPE,
+    SAME_DAY
+  }
 
   /**
    * Matches lost items with found items using Jaccard similarity.
@@ -17,22 +24,35 @@ public class MatchService {
    * @param lostItems List of lost items.
    * @param foundItems List of found items.
    * @return A LinkedHashMap where the key is a LostItem and the value is a list of matching
-   *     FoundItems.
+   *     MatchResults.
    */
-  public Map<LostItem, List<FoundItem>> matchLostAndFoundItems(
+  public Map<LostItem, List<MatchResult>> matchLostAndFoundItems(
       List<LostItem> lostItems, List<FoundItem> foundItems) {
-    Map<LostItem, List<FoundItem>> matches = new LinkedHashMap<>();
+    Map<LostItem, List<MatchResult>> matches = new LinkedHashMap<>();
     JaccardSimilarity jaccard = new JaccardSimilarity();
 
     for (LostItem lostItem : lostItems) {
-      String lostDescription = preprocessString(lostItem.getItemDescription());
-      List<FoundItem> matchedFoundItems = new ArrayList<>();
+      String lostDescrption = preprocessString(lostItem.getItemDescription());
+      List<MatchResult> matchedFoundItems = new ArrayList<>();
 
       for (FoundItem foundItem : foundItems) {
+
+        if (lostItem.getStatus() != LostItem.Status.PENDING) {
+          continue;
+        }
+
+        if (foundItem.getStatus() != FoundItem.Status.PENDING) {
+          continue;
+        }
+
+        if (!matchesFilter(lostItem, foundItem)) {
+          continue;
+        }
+
         String foundDescription = preprocessString(foundItem.getItemDescription());
-        double jaccardSimilarity = jaccard.apply(lostDescription, foundDescription);
+        double jaccardSimilarity = jaccard.apply(lostDescrption, foundDescription);
         if (jaccardSimilarity >= MATCH_THRESHOLD) {
-          matchedFoundItems.add(foundItem);
+          matchedFoundItems.add(new MatchResult(foundItem, jaccardSimilarity));
         }
       }
 
@@ -42,22 +62,77 @@ public class MatchService {
     return matches;
   }
 
-  public void printMatches(Map<LostItem, List<FoundItem>> matches) {
-    // Iterate through the matches map and print LostItem IDs with their matching FoundItem IDs
-    for (Map.Entry<LostItem, List<FoundItem>> entry : matches.entrySet()) {
+  public void printMatches(Map<LostItem, List<MatchResult>> matches) {
+    for (Map.Entry<LostItem, List<MatchResult>> entry : matches.entrySet()) {
       LostItem lostItem = entry.getKey();
-      List<FoundItem> foundItems = entry.getValue();
+      List<MatchResult> foundItems = entry.getValue();
 
       System.out.print("Lost Item ID " + lostItem.getLostItemId() + " - ");
       if (foundItems.isEmpty()) {
         System.out.println("No matches found");
       } else {
-        List<Integer> foundItemIds = new ArrayList<>();
-        for (FoundItem foundItem : foundItems) {
-          foundItemIds.add(foundItem.getFoundItemId()); // Collecting the IDs of the found items
+        System.out.println("Matches:");
+        for (MatchResult match : foundItems) {
+          System.out.println("\t" + match);
         }
-        System.out.println("Found Item IDs: " + foundItemIds);
       }
+    }
+  }
+
+  private boolean matchesFilter(LostItem lostItem, FoundItem foundItem) {
+    switch (currentMode) {
+      case SAME_TYPE:
+        return lostItem.getItemType().equals(foundItem.getItemType());
+
+      case SAME_TYPE_AND_SUBTYPE:
+        return lostItem.getItemType().equalsIgnoreCase(foundItem.getItemType())
+            && lostItem.getItemSubtype().equalsIgnoreCase(foundItem.getItemSubtype());
+
+      case SAME_DAY:
+        return lostItem
+            .getDateTimeLost()
+            .toLocalDate()
+            .equals(foundItem.getDateTimeFound().toLocalDate());
+
+      default:
+        return true; // No filter if mode is undefined
+    }
+  }
+
+  public void setMatchingMode(MatchingMode mode) {
+    if (mode != null) {
+      this.currentMode = mode;
+      System.out.println("Matching mode changed to: " + currentMode);
+    } else {
+      System.out.println("Invalid matching mode!");
+    }
+  }
+
+  public MatchingMode getMatchingMode() {
+    return currentMode;
+  }
+
+  /** Inner class to hold a found item and its similarity score. */
+  public class MatchResult {
+    private FoundItem foundItem;
+    private double similarity;
+
+    public MatchResult(FoundItem foundItem, double similarity) {
+      this.foundItem = foundItem;
+      this.similarity = similarity;
+    }
+
+    public FoundItem getFoundItem() {
+      return foundItem;
+    }
+
+    public double getSimilarity() {
+      return similarity;
+    }
+
+    @Override
+    public String toString() {
+      return "FoundItem ID: " + foundItem.getFoundItemId() + ", Similarity: " + similarity;
     }
   }
 
