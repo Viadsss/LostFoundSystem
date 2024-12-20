@@ -60,6 +60,10 @@ public class ImageService {
    * @return {@code true} if the file is successfully deleted, {@code false} otherwise.
    */
   public boolean deleteImage(String directory, String fileName) {
+    if (fileName == null || fileName.isBlank()) {
+      return false;
+    }
+
     try {
       Path filePath = Path.of("imgs/" + directory, fileName);
 

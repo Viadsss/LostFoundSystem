@@ -100,12 +100,7 @@ public class MatchService {
   }
 
   public void setMatchingMode(MatchingMode mode) {
-    if (mode != null) {
       this.currentMode = mode;
-      System.out.println("Matching mode changed to: " + currentMode);
-    } else {
-      System.out.println("Invalid matching mode!");
-    }
   }
 
   public MatchingMode getMatchingMode() {

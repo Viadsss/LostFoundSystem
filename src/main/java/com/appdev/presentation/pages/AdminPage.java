@@ -22,6 +22,8 @@ import com.appdev.presentation.components.table.TablePercentageCellRenderer;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +53,7 @@ public class AdminPage extends JPanel {
   private int[] selectedPotentialMatchItemIds = {-1, -1};
   private DefaultTableModel lostItemModel, foundItemModel, matchItemModel, potentialMatchModel;
   private JTable lostItemTable, foundItemTable, matchItemTable, potentialMatchTable;
+  private JLabel matchItemTitle, potentialMatchTitle;
 
   public AdminPage(boolean showMatch) {
     init(showMatch);
@@ -482,7 +485,7 @@ public class AdminPage extends JPanel {
         .getColumn(6)
         .setCellRenderer(new TableImageCellRenderer(matchItemTable));
 
-    JLabel title = new JLabel("Match Items");
+    matchItemTitle = new JLabel("Match Items");
 
     // create header
     JPanel actionPanel = new JPanel(new MigLayout("insets 5 20 5 20", "[fill,230]push[][]"));
@@ -496,7 +499,7 @@ public class AdminPage extends JPanel {
     // STYLES
     StyleManager.styleTablePanel(panel);
     StyleManager.styleTable(matchItemTable);
-    StyleManager.styleTitle(title);
+    StyleManager.styleTitle(matchItemTitle);
     StyleManager.styleActionPanel(actionPanel);
     StyleManager.styleScrollPane(scrollPane);
     StyleManager.styleSearchField(searchField);
@@ -509,14 +512,15 @@ public class AdminPage extends JPanel {
     // Actions
     matchItemModel.addTableModelListener(
         e -> {
-          title.setText("Match Items (" + matchItemTable.getRowCount() + ")");
+          matchItemTitle.setText("Match Items (" + matchItemTable.getRowCount() + ")");
         });
+          matchItemTitle.setText("Match Items (" + matchItemTable.getRowCount() + ")");
 
     searchField
         .getDocument()
         .addDocumentListener(
             new MatchSearchFilterDocumentListener(
-                matchItemTable, sorter, title, "Match Items", searchField));
+                matchItemTable, sorter, matchItemTitle, "Match Items", searchField));
 
     matchItemTable
         .getSelectionModel()
@@ -586,6 +590,7 @@ public class AdminPage extends JPanel {
               itemService.deleteMatchItem(item);
               imageService.deleteImage(ImageService.IDS_PATH, item.getIdPhotoPath());
               imageService.deleteImage(ImageService.PROFILES_PATH, item.getProfilePath());
+              showToast(Toast.Type.SUCCESS, "Match Item is deleted successfully");
               refreshAllTables();
             }
           } else {
@@ -603,7 +608,7 @@ public class AdminPage extends JPanel {
     actionPanel.add(verifyButton);
     actionPanel.add(deleteButton);
 
-    panel.add(title, "gapx 20");
+    panel.add(matchItemTitle, "gapx 20");
     panel.add(actionPanel);
     panel.add(separator, "height 2");
     panel.add(scrollPane);
@@ -693,18 +698,31 @@ public class AdminPage extends JPanel {
         .getColumn(6)
         .setCellRenderer(new TableImageCellRenderer(potentialMatchTable));
 
-    JLabel title = new JLabel("Potential Match");
+    potentialMatchTitle = new JLabel("Potential Match");
 
     // create header
     JPanel actionPanel = new JPanel(new MigLayout("fillx, wrap, insets 5 20 5 20", ""));
+    JPanel radioPanel = new JPanel();
+    ButtonGroup radioGroup = new ButtonGroup();
+    JRadioButton typeRadio = new JRadioButton("Same Type");
+    JRadioButton subtypeRadio = new JRadioButton("Same Subtype");
+    JRadioButton dayRadio = new JRadioButton("Same Day");
     JButton approveButton = new JButton("Approve");
 
     JSeparator separator = new JSeparator();
 
+    radioGroup.add(typeRadio);    
+    radioPanel.add(typeRadio);    
+    radioGroup.add(subtypeRadio);    
+    radioGroup.add(dayRadio);
+    radioPanel.add(subtypeRadio);    
+    radioPanel.add(dayRadio);
+    typeRadio.setSelected(true);    
+
     // STYLES
     StyleManager.styleTablePanel(panel);
     StyleManager.styleTable(potentialMatchTable);
-    StyleManager.styleTitle(title);
+    StyleManager.styleTitle(potentialMatchTitle);
     StyleManager.styleActionPanel(actionPanel);
     StyleManager.styleScrollPane(scrollPane);
     StyleManager.styleSeparator(separator);
@@ -712,9 +730,25 @@ public class AdminPage extends JPanel {
     approveButton.setIcon(new FlatSVGIcon("icons/approve.svg", 0.8f));
 
     // Actions
+    ActionListener radioListener = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+      JRadioButton radio = (JRadioButton) e.getSource();
+        if (radio == typeRadio) {
+          matchService.setMatchingMode(MatchingMode.SAME_TYPE);
+        } else if (radio == subtypeRadio) {
+          matchService.setMatchingMode(MatchingMode.SAME_TYPE_AND_SUBTYPE);
+        } else if (radio == dayRadio) {
+          matchService.setMatchingMode(MatchingMode.SAME_DAY);
+        }
+        
+        refreshAllTables();
+      }
+    };
+
     matchItemModel.addTableModelListener(
         e -> {
-          title.setText("Potential Matches (" + potentialMatchTable.getRowCount() + ")");
+          potentialMatchTitle.setText("Potential Matches (" + potentialMatchTable.getRowCount() + ")");
         });
 
     potentialMatchTable
@@ -747,9 +781,14 @@ public class AdminPage extends JPanel {
           }
         });
 
+    typeRadio.addActionListener(radioListener);
+    subtypeRadio.addActionListener(radioListener);
+    dayRadio.addActionListener(radioListener);
+
+    actionPanel.add(radioPanel, "gapleft push");    
     actionPanel.add(approveButton, "gapleft push");
 
-    panel.add(title, "gapx 20");
+    panel.add(potentialMatchTitle, "gapx 20, split 2");
     panel.add(actionPanel);
     panel.add(separator, "height 2");
     panel.add(scrollPane);
@@ -771,6 +810,8 @@ public class AdminPage extends JPanel {
         potentialMatchModel.addRow(row);
       }
     }
+
+    potentialMatchTitle.setText("Potential Matches (" + potentialMatchTable.getRowCount()  +  ")");
 
     return panel;
   }
@@ -897,6 +938,8 @@ public class AdminPage extends JPanel {
           });
     }
 
+    matchItemTitle.setText("Match Items (" + matchItemTable.getRowCount() + ")");
+
     matchItemTable.getTableHeader().repaint();
     matchItemTable.repaint();
   }
@@ -926,6 +969,7 @@ public class AdminPage extends JPanel {
       }
     }
 
+    potentialMatchTitle.setText("Potential Matches (" + potentialMatchTable.getRowCount() + ")");
     potentialMatchTable.getTableHeader().repaint();
     potentialMatchTable.repaint();
   }
