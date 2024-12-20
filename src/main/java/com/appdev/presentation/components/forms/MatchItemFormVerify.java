@@ -137,7 +137,7 @@ public class MatchItemFormVerify extends JScrollPane {
       idPhotoPath = item.getIdPhotoPath();
     } else {
       idPhotoPath =
-          imageService.saveImage(this, idPhotoFile, ImageService.IDS_PATH, item.getMatchId());
+          imageService.saveImage(this, idPhotoFile, ImageService.IDS_PATH);
     }
 
     if (profilePhotoFile == null) {
@@ -145,7 +145,7 @@ public class MatchItemFormVerify extends JScrollPane {
     } else {
       profilePhotoPath =
           imageService.saveImage(
-              this, profilePhotoFile, ImageService.PROFILES_PATH, item.getMatchId());
+              this, profilePhotoFile, ImageService.PROFILES_PATH);
     }
 
     item.setIdPhotoPath(idPhotoPath);

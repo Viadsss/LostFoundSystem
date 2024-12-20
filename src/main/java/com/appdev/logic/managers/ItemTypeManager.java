@@ -14,11 +14,12 @@ public class ItemTypeManager {
     itemSubtypesMap.put(
         "Accessories", new String[] {"Select Accessories", "Wallet", "Watch", "Glasses"});
     itemSubtypesMap.put("Clothing", new String[] {"Select Clothing", "Jacket", "Shirt", "Scarf"});
+    itemSubtypesMap.put("Others", new String[] {"Others"});
   }
 
   // An array of item types for the combo box
   public static final String[] ITEM_TYPES = {
-    "Choose Type", "Electronics", "Accessories", "Clothing"
+    "Choose Type", "Electronics", "Accessories", "Clothing", "Others"
   };
 
   // Method to get the subtypes for a given item type

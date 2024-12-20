@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.tinylog.Logger;
@@ -27,7 +29,7 @@ public class ImageService {
    * @param id - the ID used to generate the file name.
    * @return the final file name, or {@code null} if an error occurs.
    */
-  public String saveImage(Component parent, File file, String directory, int id) {
+  public String saveImage(Component parent, File file, String directory) {
     try {
       Path destinationFile = null;
       Path destinationDir = Path.of("imgs/" + directory);
@@ -37,10 +39,8 @@ public class ImageService {
 
       String originalFileName = file.getName();
       String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-      // String uuid = UUID.randomUUID().toString();
-      // String finalFileName = Integer.toString(id) + "_" + uuid + fileExtension; // Example:
-      // "1.jpg", "2.png"
-      String finalFileName = Integer.toString(id) + fileExtension;
+      String uuid = UUID.randomUUID().toString();
+      String finalFileName = uuid + fileExtension;
 
       // Copy the file to the destination directory
       destinationFile = destinationDir.resolve(finalFileName);
