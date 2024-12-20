@@ -421,9 +421,7 @@ public class ItemFormUpdate extends JScrollPane {
           itemPhotoPath = null;
         }
       } else {
-        itemPhotoPath =
-            imageService.saveImage(
-                this, selectedFile, ImageService.LOST_ITEMS_PATH);
+        itemPhotoPath = imageService.saveImage(this, selectedFile, ImageService.LOST_ITEMS_PATH);
         imageService.deleteImage(ImageService.LOST_ITEMS_PATH, currentItem.getItemPhotoPath());
       }
 
@@ -482,9 +480,7 @@ public class ItemFormUpdate extends JScrollPane {
       if (selectedFile == null) {
         itemPhotoPath = currentItem.getItemPhotoPath();
       } else {
-        itemPhotoPath =
-            imageService.saveImage(
-                this, selectedFile, ImageService.FOUND_ITEMS_PATH);
+        itemPhotoPath = imageService.saveImage(this, selectedFile, ImageService.FOUND_ITEMS_PATH);
         imageService.deleteImage(ImageService.FOUND_ITEMS_PATH, currentItem.getItemPhotoPath());
       }
 
@@ -515,6 +511,10 @@ public class ItemFormUpdate extends JScrollPane {
   private boolean validateItemTypeAndSubtype() {
     String selectedItemType = itemTypeBox.getSelectedItem().toString();
     String selectedItemSubtype = itemSubtypeBox.getSelectedItem().toString();
+
+    if (selectedItemType.equals("Others")) {
+      selectedItemSubtype = "Others";
+    }
 
     boolean isValid = true;
 

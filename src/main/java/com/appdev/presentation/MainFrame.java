@@ -1,9 +1,7 @@
 package com.appdev.presentation;
 
 import com.appdev.logic.managers.PageManager;
-import com.appdev.presentation.pages.AdminPage;
 import com.appdev.presentation.pages.ItemFoundPage;
-
 import javax.swing.JFrame;
 
 public class MainFrame extends JFrame {

@@ -136,16 +136,13 @@ public class MatchItemFormVerify extends JScrollPane {
     if (idPhotoFile == null) {
       idPhotoPath = item.getIdPhotoPath();
     } else {
-      idPhotoPath =
-          imageService.saveImage(this, idPhotoFile, ImageService.IDS_PATH);
+      idPhotoPath = imageService.saveImage(this, idPhotoFile, ImageService.IDS_PATH);
     }
 
     if (profilePhotoFile == null) {
       profilePhotoPath = item.getProfilePath();
     } else {
-      profilePhotoPath =
-          imageService.saveImage(
-              this, profilePhotoFile, ImageService.PROFILES_PATH);
+      profilePhotoPath = imageService.saveImage(this, profilePhotoFile, ImageService.PROFILES_PATH);
     }
 
     item.setIdPhotoPath(idPhotoPath);

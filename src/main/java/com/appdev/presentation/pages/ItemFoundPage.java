@@ -2,7 +2,6 @@ package com.appdev.presentation.pages;
 
 import com.appdev.logic.managers.ItemTypeManager;
 import com.appdev.logic.managers.StyleManager;
-import com.appdev.logic.models.FoundItem;
 import com.appdev.logic.services.ImageService;
 import com.appdev.logic.services.ItemService;
 import com.appdev.logic.validations.ItemValidator;
@@ -45,7 +44,10 @@ public class ItemFoundPage extends JScrollPane {
   private ItemValidator validator = new ItemValidator();
 
   public ItemFoundPage() {
-    JPanel topPanel = new JPanel(new MigLayout("fillx,wrap,insets 5 30 10 30, width 500, hidemode 2", "[center]", "[center]"));
+    JPanel topPanel =
+        new JPanel(
+            new MigLayout(
+                "fillx,wrap,insets 5 30 10 30, width 500, hidemode 2", "[center]", "[center]"));
 
     panel =
         new JPanel(
@@ -89,10 +91,11 @@ public class ItemFoundPage extends JScrollPane {
 
     approveButton = new JButton("Approve");
     unmatchButton = new JButton("Unmatch"); // remove
-    cancelButton = new JButton("");    
+    cancelButton = new JButton("");
 
-
-    cancelButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
+    cancelButton.putClientProperty(
+        FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
+    cancelButton.setIcon(new FlatSVGIcon("icons/delete.svg", 0.8f));
 
     nameField.putClientProperty(
         FlatClientProperties.PLACEHOLDER_TEXT, "Enter your name (e.g., John D. Smith)");
@@ -195,14 +198,10 @@ public class ItemFoundPage extends JScrollPane {
             + "pressedBackground: #A0251A");
 
     panel.add(new JSeparator(), "height 2!, gapy 10 0");
-    panel.add(buttonPanel, "gapleft push");    
+    panel.add(buttonPanel, "gapleft push");
 
     // Actions
-  itemTypeBox.addActionListener(e -> {
-    itemSubtypeBox.setSelectedIndex(0);
-  });    
     itemTypeBox.addActionListener(new ItemTypeActionListener());
-    itemSubtypeBox.addActionListener(new ItemTypeActionListener());
     photoButton.addActionListener(
         e -> {
           ImageService imageService = new ImageService();
@@ -234,9 +233,6 @@ public class ItemFoundPage extends JScrollPane {
     nameField.getDocument().addDocumentListener(new DebouncedDocumentListener());
     emailField.getDocument().addDocumentListener(new DebouncedDocumentListener());
     phoneField.getDocument().addDocumentListener(new DebouncedDocumentListener());
-
-
-
   }
 
   public boolean addFoundItem() {
@@ -249,9 +245,7 @@ public class ItemFoundPage extends JScrollPane {
       return false;
     }
 
-    
     System.out.println("WENT HERE!!!!");
-
 
     ImageService imageService = new ImageService();
     ItemService itemService = new ItemService();
@@ -274,11 +268,8 @@ public class ItemFoundPage extends JScrollPane {
       if (selectedFile == null) {
         itemPhotoPath = null;
       } else {
-        itemPhotoPath =
-            imageService.saveImage(
-                this, selectedFile, ImageService.FOUND_ITEMS_PATH);
+        itemPhotoPath = imageService.saveImage(this, selectedFile, ImageService.FOUND_ITEMS_PATH);
       }
-
 
       // Store sa mismong constructor ng found items
       currentItem.setItemType(itemType);
@@ -309,6 +300,13 @@ public class ItemFoundPage extends JScrollPane {
   private boolean validateItemTypeAndSubtype() {
     String selectedItemType = itemTypeBox.getSelectedItem().toString();
     String selectedItemSubtype = itemSubtypeBox.getSelectedItem().toString();
+
+    if (selectedItemType.equals("Others")) {
+      selectedItemSubtype = "Others";
+    }
+
+    System.out.println("Type: " + selectedItemType);
+    System.out.println("Subtype: " + selectedItemSubtype);
 
     boolean isValid = true;
 
@@ -426,7 +424,6 @@ public class ItemFoundPage extends JScrollPane {
     }
   }
 
-
   private boolean validateUpdateFoundItemForm() {
     return validateItemTypeAndSubtype()
         & validateDescriptionArea()
@@ -464,10 +461,6 @@ public class ItemFoundPage extends JScrollPane {
     public void actionPerformed(ActionEvent e) {
       // Get the selected item type
       String selectedType = (String) itemTypeBox.getSelectedItem();
-      
-      if (selectedType.equals("Others")) {
-        itemSubtypeBox.setSelectedItem("Others");
-      }
 
       // Update the item subtypes based on the selected type
       itemSubtypeBox.setModel(
@@ -483,7 +476,6 @@ public class ItemFoundPage extends JScrollPane {
       }
     }
   }
-
 
   // Leave
   private class DebouncedDocumentListener implements DocumentListener {
@@ -544,7 +536,6 @@ public class ItemFoundPage extends JScrollPane {
   private Timer debounceTimer; // leave
 
   private JButton approveButton, unmatchButton, cancelButton;
-
   private JLabel itemTypeErrorLabel,
       itemSubtypeErrorLabel,
       itemDescriptionErrorLabel,
@@ -555,4 +546,3 @@ public class ItemFoundPage extends JScrollPane {
       emailErrorLabel,
       phoneErrorLabel;
 }
-
