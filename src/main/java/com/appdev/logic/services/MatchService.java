@@ -100,7 +100,7 @@ public class MatchService {
   }
 
   public void setMatchingMode(MatchingMode mode) {
-      this.currentMode = mode;
+    this.currentMode = mode;
   }
 
   public MatchingMode getMatchingMode() {

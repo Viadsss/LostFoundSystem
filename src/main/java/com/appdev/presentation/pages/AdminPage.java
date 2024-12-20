@@ -514,7 +514,7 @@ public class AdminPage extends JPanel {
         e -> {
           matchItemTitle.setText("Match Items (" + matchItemTable.getRowCount() + ")");
         });
-          matchItemTitle.setText("Match Items (" + matchItemTable.getRowCount() + ")");
+    matchItemTitle.setText("Match Items (" + matchItemTable.getRowCount() + ")");
 
     searchField
         .getDocument()
@@ -711,13 +711,13 @@ public class AdminPage extends JPanel {
 
     JSeparator separator = new JSeparator();
 
-    radioGroup.add(typeRadio);    
-    radioPanel.add(typeRadio);    
-    radioGroup.add(subtypeRadio);    
+    radioGroup.add(typeRadio);
+    radioPanel.add(typeRadio);
+    radioGroup.add(subtypeRadio);
     radioGroup.add(dayRadio);
-    radioPanel.add(subtypeRadio);    
+    radioPanel.add(subtypeRadio);
     radioPanel.add(dayRadio);
-    typeRadio.setSelected(true);    
+    typeRadio.setSelected(true);
 
     // STYLES
     StyleManager.styleTablePanel(panel);
@@ -730,25 +730,27 @@ public class AdminPage extends JPanel {
     approveButton.setIcon(new FlatSVGIcon("icons/approve.svg", 0.8f));
 
     // Actions
-    ActionListener radioListener = new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-      JRadioButton radio = (JRadioButton) e.getSource();
-        if (radio == typeRadio) {
-          matchService.setMatchingMode(MatchingMode.SAME_TYPE);
-        } else if (radio == subtypeRadio) {
-          matchService.setMatchingMode(MatchingMode.SAME_TYPE_AND_SUBTYPE);
-        } else if (radio == dayRadio) {
-          matchService.setMatchingMode(MatchingMode.SAME_DAY);
-        }
-        
-        refreshAllTables();
-      }
-    };
+    ActionListener radioListener =
+        new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            JRadioButton radio = (JRadioButton) e.getSource();
+            if (radio == typeRadio) {
+              matchService.setMatchingMode(MatchingMode.SAME_TYPE);
+            } else if (radio == subtypeRadio) {
+              matchService.setMatchingMode(MatchingMode.SAME_TYPE_AND_SUBTYPE);
+            } else if (radio == dayRadio) {
+              matchService.setMatchingMode(MatchingMode.SAME_DAY);
+            }
+
+            refreshAllTables();
+          }
+        };
 
     matchItemModel.addTableModelListener(
         e -> {
-          potentialMatchTitle.setText("Potential Matches (" + potentialMatchTable.getRowCount() + ")");
+          potentialMatchTitle.setText(
+              "Potential Matches (" + potentialMatchTable.getRowCount() + ")");
         });
 
     potentialMatchTable
@@ -785,7 +787,7 @@ public class AdminPage extends JPanel {
     subtypeRadio.addActionListener(radioListener);
     dayRadio.addActionListener(radioListener);
 
-    actionPanel.add(radioPanel, "gapleft push");    
+    actionPanel.add(radioPanel, "gapleft push");
     actionPanel.add(approveButton, "gapleft push");
 
     panel.add(potentialMatchTitle, "gapx 20, split 2");
@@ -811,7 +813,7 @@ public class AdminPage extends JPanel {
       }
     }
 
-    potentialMatchTitle.setText("Potential Matches (" + potentialMatchTable.getRowCount()  +  ")");
+    potentialMatchTitle.setText("Potential Matches (" + potentialMatchTable.getRowCount() + ")");
 
     return panel;
   }
