@@ -1,23 +1,36 @@
-LAYOUT
+## Wendel
+- [ ] - Start Page
+- [ ] - Lost Item Page
+- [ ] - Found Item Page
 
-Wendel
-[] - Start Page
-[] - Lost Item Page
-[] - Found Item Page
-vesfefqwefw
-Viado
-[] - Admin Page
-[] - Verification Page
+## Viado
+- [ x ] - Admin Page
+- [ x ] - Verification Page
+- [  ] - Email Service : WIP
 
 
-Suggestions on Add
-- Create a Lost Item Page & Found Item Page
-- attach the listeners after clicking the ok button (then we will now check each type if it is valid)
+GPT - Lost Item Email
+Hi {{reporterName}},
 
-ADDITIONAL:
-Add Potential Match table
-Lost Item ID | Found Item ID | Lost Item Description | Found Item Description | Lost Item Photo? | Found Item Photo? (I think di na need photo)
+Great news! We’ve found an item that matches the description of the one you reported as lost.
 
-case 1:
-no file and no photopath : null
-with file and no photo path = wit
+Please visit our office or contact us to verify that this is your item. Don't forget to bring any proof of ownership, if required.
+
+We’re here to assist you in getting your belongings back. If you have any questions, feel free to reach out.
+
+Best regards,  
+The Lost and Found Team
+
+
+
+GPT - Found Item Email
+Hi {{reporterName}},
+
+Thank you for your kindness and effort in reporting the item you found! We’re happy to inform you that the case has been resolved, and the item has been returned to its rightful owner.
+
+Your contribution has made a big difference, and we truly appreciate your help in making our community a better place.
+
+Thank you once again for your support.
+
+Best regards,  
+The Lost and Found Team
