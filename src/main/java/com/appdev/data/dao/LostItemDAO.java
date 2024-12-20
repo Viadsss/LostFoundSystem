@@ -50,6 +50,38 @@ public class LostItemDAO {
     return lostItems;
   }
 
+  public List<LostItem> getAllLostItemsDescending() {
+    String query = "SELECT * FROM lost_items ORDER BY createdAt DESC";
+    List<LostItem> lostItems = new ArrayList<>();
+
+    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+      ResultSet rs = pstmt.executeQuery();
+
+      while (rs.next()) {
+        LostItem item =
+            new LostItem(
+                rs.getInt("lost_item_id"),
+                rs.getString("item_type"),
+                rs.getString("item_subtype"),
+                rs.getString("item_description"),
+                rs.getString("location_details"),
+                rs.getTimestamp("date_time_lost").toLocalDateTime(),
+                rs.getString("item_photo_path"),
+                rs.getString("reporter_name"),
+                rs.getString("reporter_email"),
+                rs.getString("reporter_phone"),
+                LostItem.Status.valueOf(rs.getString("status")),
+                rs.getTimestamp("createdAt").toLocalDateTime());
+        lostItems.add(item);
+      }
+
+    } catch (SQLException e) {
+      Logger.error(e, "Error retrieving all lost items from the database.");
+    }
+
+    return lostItems;
+  }
+
   public LostItem getLostItemById(int id) {
     String query = "SELECT * FROM lost_items WHERE lost_item_id = ?";
     LostItem item = null;

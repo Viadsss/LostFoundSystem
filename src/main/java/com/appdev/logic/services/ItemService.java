@@ -38,6 +38,10 @@ public class ItemService {
     return lostItemDAO.getAllLostItems();
   }
 
+  public List<LostItem> getAllLostItemsDescending() {
+    return lostItemDAO.getAllLostItemsDescending();
+  }
+
   public List<FoundItem> getAllFoundItems() {
     return foundItemDAO.getAllFoundItems();
   }
