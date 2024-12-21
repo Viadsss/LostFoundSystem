@@ -820,9 +820,30 @@ public class AdminPage extends JPanel {
 
   private Component createFooterAction() {
     JPanel panel = new JPanel(new MigLayout("", "[grow, center]", "[grow]"));
-    JButton infoButton = new JButton("Info");
+    JButton infoButton = new JButton();
     JButton refreshButton = new JButton("Refresh");
     JButton matchButton = new JButton("Match");
+
+    infoButton.addActionListener(
+        e -> {
+          JOptionPane.showMessageDialog(
+              this,
+              "Search Keyword for Lost/Found Items:\n" +
+              " - id: [Item ID]\n" +
+              " - type: [Item Type]\n" +
+              " - subtype: [Item Subtype]\n" +
+              " - date: [Date & Time Reported]\n" +
+              " - name: [Name of Reporter]\n" +
+              " - status: [Item Status]\n\n" +
+              "Search Keyword for Matched Items:\n" +
+              " - id: [Match Item ID]\n" +
+              " - lostid: [Lost Item ID]\n" +
+              " - foundid: [Found Item ID]\n" +
+              " - date: [Date & Time Matched]\n" +
+              " - status: [Match Item Status]",
+              "Search Keywords",
+              JOptionPane.INFORMATION_MESSAGE);
+        });
 
     matchButton.addActionListener(
         e -> {
@@ -864,13 +885,16 @@ public class AdminPage extends JPanel {
         });
 
     JPanel pane = new JPanel();
-    pane.add(infoButton);
+    pane.add(matchButton);
     pane.add(refreshButton);
 
+    panel.add(infoButton);
     panel.add(pane);
-    panel.add(matchButton);
 
-    infoButton.setIcon(new FlatSVGIcon("icons/info.svg", 0.8f));
+    infoButton.putClientProperty(
+        FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
+    infoButton.setIcon(new FlatSVGIcon("icons/info.svg"));
+    refreshButton.setIcon(new FlatSVGIcon("icons/refresh.svg", 0.8f));
     matchButton.setIcon(new FlatSVGIcon("icons/match.svg", 0.8f));
 
     return panel;
