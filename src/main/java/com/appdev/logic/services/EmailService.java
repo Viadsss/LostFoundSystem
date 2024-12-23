@@ -50,6 +50,7 @@ public class EmailService {
     Personalization personalization = new Personalization();
     personalization.addTo(to);
     personalization.addDynamicTemplateData("reporterName", item.getReporterName());
+    mail.addPersonalization(personalization);
 
     sendMail(mail);
   }
@@ -78,6 +79,7 @@ public class EmailService {
     Personalization personalization = new Personalization();
     personalization.addTo(to);
     personalization.addDynamicTemplateData("reporterName", item.getReporterName());
+    mail.addPersonalization(personalization);
 
     sendMail(mail);
   }
