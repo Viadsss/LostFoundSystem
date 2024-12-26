@@ -124,29 +124,37 @@ public class FoundItemDAO {
           e, "Error updating status of found item with ID {} in the database.", foundItemId);
     }
   }
-  
-  public void addFoundItem(String itemType, String itemSubtype, String itemDescription, String locationDetails, LocalDateTime dateTimeReported, String itemPhotoPath, String reporterName, String reporterEmail, String reporterPhone) {
+
+  public void addFoundItem(
+      String itemType,
+      String itemSubtype,
+      String itemDescription,
+      String locationDetails,
+      LocalDateTime dateTimeReported,
+      String itemPhotoPath,
+      String reporterName,
+      String reporterEmail,
+      String reporterPhone) {
     String query =
         "INSERT INTO found_items (item_type, item_subtype, item_description, location_details, "
             + "date_time_found, item_photo_path, reporter_name, reporter_email, reporter_phone) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-        pstmt.setString(1, itemType);
-        pstmt.setString(2, itemSubtype);
-        pstmt.setString(3, itemDescription);
-        pstmt.setString(4, locationDetails);
-        pstmt.setTimestamp(5, Timestamp.valueOf(dateTimeReported)); // LocalDateTime to Timestamp
-        pstmt.setString(6, itemPhotoPath);
-        pstmt.setString(7, reporterName);
-        pstmt.setString(8, reporterEmail);
-        pstmt.setString(9, reporterPhone);
+      pstmt.setString(1, itemType);
+      pstmt.setString(2, itemSubtype);
+      pstmt.setString(3, itemDescription);
+      pstmt.setString(4, locationDetails);
+      pstmt.setTimestamp(5, Timestamp.valueOf(dateTimeReported)); // LocalDateTime to Timestamp
+      pstmt.setString(6, itemPhotoPath);
+      pstmt.setString(7, reporterName);
+      pstmt.setString(8, reporterEmail);
+      pstmt.setString(9, reporterPhone);
 
-        pstmt.executeUpdate();
+      pstmt.executeUpdate();
 
     } catch (SQLException e) {
-        Logger.error(e, "Error adding a new found item to the database.");
+      Logger.error(e, "Error adding a new found item to the database.");
     }
-}
-  
+  }
 }

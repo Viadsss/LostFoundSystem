@@ -22,16 +22,52 @@ public class ItemService {
     this.matchItemDAO = new MatchItemDAO();
     this.validator = new ItemValidator();
   }
-  
+
   // CREATE
-  public void addFoundItem(String itemType, String itemSubtype, String itemDescription, String locationDetails, LocalDateTime dateTimeReported, String itemPhotoPath, String reporterName, String reporterEmail, String reporterPhone){
-      foundItemDAO.addFoundItem(itemType, itemSubtype, itemDescription, locationDetails, dateTimeReported, itemPhotoPath, reporterName, reporterEmail, reporterPhone);
+  public void addFoundItem(
+      String itemType,
+      String itemSubtype,
+      String itemDescription,
+      String locationDetails,
+      LocalDateTime dateTimeReported,
+      String itemPhotoPath,
+      String reporterName,
+      String reporterEmail,
+      String reporterPhone) {
+    foundItemDAO.addFoundItem(
+        itemType,
+        itemSubtype,
+        itemDescription,
+        locationDetails,
+        dateTimeReported,
+        itemPhotoPath,
+        reporterName,
+        reporterEmail,
+        reporterPhone);
   }
-  
-  public void addLostItem(String itemType, String itemSubtype, String itemDescription, String locationDetails, LocalDateTime dateTimeReported, String itemPhotoPath, String reporterName, String reporterEmail, String reporterPhone){
-      lostItemDAO.addLostItem(itemType, itemSubtype, itemDescription, locationDetails, dateTimeReported, itemPhotoPath, reporterName, reporterEmail, reporterPhone);
+
+  public void addLostItem(
+      String itemType,
+      String itemSubtype,
+      String itemDescription,
+      String locationDetails,
+      LocalDateTime dateTimeReported,
+      String itemPhotoPath,
+      String reporterName,
+      String reporterEmail,
+      String reporterPhone) {
+    lostItemDAO.addLostItem(
+        itemType,
+        itemSubtype,
+        itemDescription,
+        locationDetails,
+        dateTimeReported,
+        itemPhotoPath,
+        reporterName,
+        reporterEmail,
+        reporterPhone);
   }
-  
+
   public void addMatchItem(LostItem lostItem, FoundItem foundItem) {
     int lostId = lostItem.getLostItemId();
     int foundId = foundItem.getFoundItemId();
