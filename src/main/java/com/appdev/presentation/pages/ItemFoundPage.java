@@ -1,6 +1,7 @@
 package com.appdev.presentation.pages;
 
 import com.appdev.logic.managers.ItemTypeManager;
+import com.appdev.logic.managers.PageManager;
 import com.appdev.logic.managers.StyleManager;
 import com.appdev.logic.services.ImageService;
 import com.appdev.logic.services.ItemService;
@@ -42,6 +43,7 @@ import raven.extras.AvatarIcon;
 public class ItemFoundPage extends JScrollPane {
   private JPanel panel;
   private ItemValidator validator = new ItemValidator();
+  
 
   public ItemFoundPage() {
     JPanel topPanel =
@@ -60,7 +62,7 @@ public class ItemFoundPage extends JScrollPane {
     init();
   }
 
-  private void init() {
+ private void init() {
     itemTypeBox = new JComboBox<>(ItemTypeManager.ITEM_TYPES);
     itemSubtypeBox = new JComboBox<>(new String[] {""});
 
@@ -90,12 +92,8 @@ public class ItemFoundPage extends JScrollPane {
     phoneField = new JTextField();
 
     approveButton = new JButton("Approve");
-    unmatchButton = new JButton("Unmatch"); // remove
-    cancelButton = new JButton("");
+    cancelButton = new JButton("Cancel Report");
 
-    cancelButton.putClientProperty(
-        FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
-    cancelButton.setIcon(new FlatSVGIcon("icons/delete.svg", 0.8f));
 
     nameField.putClientProperty(
         FlatClientProperties.PLACEHOLDER_TEXT, "Enter your name (e.g., John D. Smith)");
@@ -175,13 +173,22 @@ public class ItemFoundPage extends JScrollPane {
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.add(approveButton);
-    buttonPanel.add(unmatchButton);
     buttonPanel.add(cancelButton);
 
     cancelButton.putClientProperty(
-        FlatClientProperties.STYLE, "font: +2 bold; margin: 8, 12, 8, 12;");
-    unmatchButton.putClientProperty(
-        FlatClientProperties.STYLE, "font: +2 bold; margin: 8, 12, 8, 12;");
+        FlatClientProperties.STYLE,
+        ""
+            + "font: +2 bold;"
+            + "margin: 8, 12, 8, 12;"
+            + "background: #741B13;"
+            + "borderColor: #741B13;"
+            + "borderWidth: 1;"
+            + "focusColor: #74211380;"
+            + "focusedBorderColor: #681E118D;"
+            + "foreground: #F6F6F6;"
+            + "hoverBackground: #811E15;"
+            + "hoverBorderColor: #681E118D;"
+            + "pressedBackground: #A0251A");
     approveButton.putClientProperty(
         FlatClientProperties.STYLE,
         ""
@@ -223,7 +230,12 @@ public class ItemFoundPage extends JScrollPane {
           photoLabel.setIcon(new AvatarIcon("", 350, 350, 0));
           photoLabel.setVisible(false);
         });
-
+    approveButton.addActionListener(
+        e -> {
+            addFoundItem();
+        });
+    cancelButton.addActionListener(e ->PageManager.getInstance().showPage(new LandingPage()));
+    
     itemTypeBox.addItemListener(new ItemTypeListener());
     itemSubtypeBox.addItemListener(new ItemTypeListener());
     itemDescriptionArea.getDocument().addDocumentListener(new DebouncedDocumentListener());
@@ -235,66 +247,65 @@ public class ItemFoundPage extends JScrollPane {
     phoneField.getDocument().addDocumentListener(new DebouncedDocumentListener());
   }
 
-  public boolean addFoundItem() {
+public void addFoundItem() {
     if (!validateUpdateFoundItemForm()) {
-      JOptionPane.showMessageDialog(
-          this,
-          "Invalid Found Item: The provided item data is invalid.",
-          "Error",
-          JOptionPane.ERROR_MESSAGE);
-      return false;
+        JOptionPane.showMessageDialog(
+            this,
+            "Invalid Found Item: The provided item data is invalid.",
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+        return;
     }
 
     System.out.println("WENT HERE!!!!");
-
+    
     ImageService imageService = new ImageService();
     ItemService itemService = new ItemService();
-
+    
     try {
-      String itemType = itemTypeBox.getSelectedItem().toString();
-      String itemSubtype = itemSubtypeBox.getSelectedItem().toString();
-      String itemDescription = itemDescriptionArea.getText().trim();
-      String locationDetails = itemLocationArea.getText().trim();
+        String itemType = (String) itemTypeBox.getSelectedItem();
+        String itemSubtype = (String) itemSubtypeBox.getSelectedItem();
+        String itemDescription = itemDescriptionArea.getText();
+        String locationDetails = itemLocationArea.getText();
 
-      LocalDate date = datePicker.getSelectedDate();
-      LocalTime time = timePicker.getSelectedTime();
-      LocalDateTime dateTimeFound = date.atTime(time);
-      String itemPhotoPath = null;
-
-      String reporterName = nameField.getText().trim();
-      String reporterEmail = emailField.getText().trim();
-      String reporterPhone = phoneField.getText().trim();
-
-      if (selectedFile == null) {
-        itemPhotoPath = null;
-      } else {
-        itemPhotoPath = imageService.saveImage(this, selectedFile, ImageService.FOUND_ITEMS_PATH);
+        LocalDate date = datePicker.getSelectedDate();
+        LocalTime time = timePicker.getSelectedTime();
+        LocalDateTime dateTimeFound = date.atTime(time);
+        String itemPhotoPath = null;
+        String reporterName = nameField.getText();
+        String reporterEmail = emailField.getText();
+        String reporterPhone = phoneField.getText();
+        
+        if(selectedFile== null){
+            itemPhotoPath = null;
+        }else{
+            itemPhotoPath = imageService.saveImage(this, selectedFile, ImageService.FOUND_ITEMS_PATH);
+        }
+        
+        if (reporterPhone.equals("")) {
+        reporterPhone = null;
       }
+        System.out.println("Type: " + itemType);
+        System.out.println("Subtype: " + itemSubtype);
+        System.out.println("Description: " + itemDescription);
+        System.out.println("Location: " + locationDetails);
+        System.out.println("Date & Time: " + dateTimeFound);
+        System.out.println("PhotoPath: " + itemPhotoPath);
+        System.out.println("Name: " + reporterName);
+        System.out.println("Email: " + reporterEmail);
+        System.out.println("Phone: " + reporterPhone);
+        
+        itemService.addFoundItem(itemType,itemSubtype,itemDescription,locationDetails,dateTimeFound,itemPhotoPath,reporterName,reporterEmail,reporterPhone);
+      
+        // Assign to fields or process further here...
 
-      // Store sa mismong constructor ng found items
-      currentItem.setItemType(itemType);
-      currentItem.setItemSubtype(itemSubtype);
-      currentItem.setItemDescription(itemDescription);
-      currentItem.setLocationDetails(locationDetails);
-      currentItem.setDateTimeFound(dateTimeFound);
-      currentItem.setItemPhotoPath(itemPhotoPath);
-      currentItem.setReporterName(reporterName);
-      currentItem.setReporterEmail(reporterEmail);
-
-      if (reporterPhone.equals("")) {
-        currentItem.setReporterPhone(null);
-      } else {
-        currentItem.setReporterPhone(reporterPhone);
-      }
-
-      itemService.updateFoundItem(currentItem);
     } catch (IllegalArgumentException ex) {
-      JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-      return false;
+        JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
+    
+}
 
-    return true;
-  }
+
 
   // LEAVE
   private boolean validateItemTypeAndSubtype() {
@@ -535,7 +546,7 @@ public class ItemFoundPage extends JScrollPane {
   private JButton photoButton, clearButton;
   private Timer debounceTimer; // leave
 
-  private JButton approveButton, unmatchButton, cancelButton;
+  private JButton approveButton,cancelButton;
   private JLabel itemTypeErrorLabel,
       itemSubtypeErrorLabel,
       itemDescriptionErrorLabel,
