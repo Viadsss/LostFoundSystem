@@ -5,6 +5,7 @@ import com.appdev.logic.managers.StyleManager;
 import com.appdev.logic.models.FoundItem;
 import com.appdev.logic.models.LostItem;
 import com.appdev.logic.models.MatchItem;
+import com.appdev.logic.services.EmailService;
 import com.appdev.logic.services.ImageService;
 import com.appdev.logic.services.ItemService;
 import com.appdev.logic.services.MatchService;
@@ -24,6 +25,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +34,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import net.miginfocom.swing.MigLayout;
+import org.tinylog.Logger;
 import raven.modal.ModalDialog;
 import raven.modal.Toast;
+import raven.modal.Toast.Type;
 import raven.modal.component.SimpleModalBorder;
 import raven.modal.option.Location;
 import raven.modal.option.Option;
@@ -47,6 +51,7 @@ import raven.modal.toast.option.ToastStyle.BorderType;
 public class AdminPage extends JPanel {
   private ItemService itemService = new ItemService();
   private MatchService matchService = new MatchService();
+  private EmailService emailService = new EmailService();
   private int selectedLostItemId = -1;
   private int selectedFoundItemId = -1;
   private int selectedMatchItemId = -1;
@@ -820,27 +825,33 @@ public class AdminPage extends JPanel {
 
   private Component createFooterAction() {
     JPanel panel = new JPanel(new MigLayout("", "[grow, center]", "[grow]"));
+    JButton backButton = new JButton("Back");
     JButton infoButton = new JButton();
     JButton refreshButton = new JButton("Refresh");
     JButton matchButton = new JButton("Match");
+
+    backButton.addActionListener(
+        e -> {
+          PageManager.getInstance().showPage(new LandingPage());
+        });
 
     infoButton.addActionListener(
         e -> {
           JOptionPane.showMessageDialog(
               this,
-              "Search Keyword for Lost/Found Items:\n" +
-              " - id: [Item ID]\n" +
-              " - type: [Item Type]\n" +
-              " - subtype: [Item Subtype]\n" +
-              " - date: [Date & Time Reported]\n" +
-              " - name: [Name of Reporter]\n" +
-              " - status: [Item Status]\n\n" +
-              "Search Keyword for Matched Items:\n" +
-              " - id: [Match Item ID]\n" +
-              " - lostid: [Lost Item ID]\n" +
-              " - foundid: [Found Item ID]\n" +
-              " - date: [Date & Time Matched]\n" +
-              " - status: [Match Item Status]",
+              "Search Keyword for Lost/Found Items:\n"
+                  + " - id: [Item ID]\n"
+                  + " - type: [Item Type]\n"
+                  + " - subtype: [Item Subtype]\n"
+                  + " - date: [Date & Time Reported]\n"
+                  + " - name: [Name of Reporter]\n"
+                  + " - status: [Item Status]\n\n"
+                  + "Search Keyword for Matched Items:\n"
+                  + " - id: [Match Item ID]\n"
+                  + " - lostid: [Lost Item ID]\n"
+                  + " - foundid: [Found Item ID]\n"
+                  + " - date: [Date & Time Matched]\n"
+                  + " - status: [Match Item Status]",
               "Search Keywords",
               JOptionPane.INFORMATION_MESSAGE);
         });
@@ -884,12 +895,16 @@ public class AdminPage extends JPanel {
           refreshAllTables();
         });
 
-    JPanel pane = new JPanel();
-    pane.add(matchButton);
-    pane.add(refreshButton);
+    JPanel leftPane = new JPanel();
+    leftPane.add(backButton);
+    leftPane.add(infoButton);
 
-    panel.add(infoButton);
-    panel.add(pane);
+    JPanel rightPane = new JPanel();
+    rightPane.add(matchButton);
+    rightPane.add(refreshButton);
+
+    panel.add(leftPane);
+    panel.add(rightPane);
 
     infoButton.putClientProperty(
         FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
@@ -1170,6 +1185,7 @@ public class AdminPage extends JPanel {
                 itemService.addMatchItem(lostItem, foundItem);
                 refreshAllTables();
                 showToast(Toast.Type.SUCCESS, "Matched the Items Successfully");
+                sendEmail(lostItem);
               } else if (action == 1) {
                 System.out.println("Clicked CANCEL");
               }
@@ -1186,5 +1202,20 @@ public class AdminPage extends JPanel {
     style.setIconSeparateLine(true);
     ToastOption option = Toast.createOption().setStyle(style);
     Toast.show(this, type, message, ToastLocation.TOP_CENTER, option);
+  }
+
+  private void sendEmail(LostItem lostItem) {
+    try {
+      // Call to the email service to send the email for a lost item
+      emailService.sendEmail(lostItem);
+    } catch (IOException e) {
+      // Handle the IOException (e.g., network issues, failure to send email)
+      showToast(Type.ERROR, "An error occurred while sending the email");
+      Logger.error("Error occurred while sending the email: {}", e.getMessage());
+    } catch (IllegalStateException e) {
+      // Handle the IllegalStateException (e.g., missing configuration or environment variables)
+      showToast(Type.WARNING, "Email service is not properly configured. Please contact support.");
+      Logger.error("Email service is not properly configured: {}", e.getMessage());
+    }
   }
 }
