@@ -39,11 +39,17 @@ import net.miginfocom.swing.MigLayout;
 import raven.datetime.component.date.DatePicker;
 import raven.datetime.component.time.TimePicker;
 import raven.extras.AvatarIcon;
+import raven.modal.Toast;
+import raven.modal.Toast.Type;
+import raven.modal.toast.option.ToastLocation;
+import raven.modal.toast.option.ToastOption;
+import raven.modal.toast.option.ToastStyle;
+import raven.modal.toast.option.ToastStyle.BackgroundType;
+import raven.modal.toast.option.ToastStyle.BorderType;
 
 public class ItemFoundPage extends JScrollPane {
   private JPanel panel;
   private ItemValidator validator = new ItemValidator();
-  
 
   public ItemFoundPage() {
     JPanel topPanel =
@@ -62,7 +68,7 @@ public class ItemFoundPage extends JScrollPane {
     init();
   }
 
- private void init() {
+  private void init() {
     itemTypeBox = new JComboBox<>(ItemTypeManager.ITEM_TYPES);
     itemSubtypeBox = new JComboBox<>(new String[] {""});
 
@@ -86,14 +92,14 @@ public class ItemFoundPage extends JScrollPane {
     photoButton = new JButton("Choose Photo");
     clearButton = new JButton("Clear");
     photoLabel = new JLabel(new AvatarIcon("", 350, 350, 0));
+    photoLabel.setVisible(false);
 
     nameField = new JTextField();
     emailField = new JTextField();
     phoneField = new JTextField();
 
-    approveButton = new JButton("Approve");
+    approveButton = new JButton("Submit Report");
     cancelButton = new JButton("Cancel Report");
-
 
     nameField.putClientProperty(
         FlatClientProperties.PLACEHOLDER_TEXT, "Enter your name (e.g., John D. Smith)");
@@ -176,19 +182,7 @@ public class ItemFoundPage extends JScrollPane {
     buttonPanel.add(cancelButton);
 
     cancelButton.putClientProperty(
-        FlatClientProperties.STYLE,
-        ""
-            + "font: +2 bold;"
-            + "margin: 8, 12, 8, 12;"
-            + "background: #741B13;"
-            + "borderColor: #741B13;"
-            + "borderWidth: 1;"
-            + "focusColor: #74211380;"
-            + "focusedBorderColor: #681E118D;"
-            + "foreground: #F6F6F6;"
-            + "hoverBackground: #811E15;"
-            + "hoverBorderColor: #681E118D;"
-            + "pressedBackground: #A0251A");
+        FlatClientProperties.STYLE, "" + "font: +2 bold;" + "margin: 8, 12, 8, 12;");
     approveButton.putClientProperty(
         FlatClientProperties.STYLE,
         ""
@@ -232,10 +226,13 @@ public class ItemFoundPage extends JScrollPane {
         });
     approveButton.addActionListener(
         e -> {
-            addFoundItem();
+          if (addFoundItem()) {
+            showToast(Type.SUCCESS, "Found Item Reported Successfully!");
+            PageManager.getInstance().showPage(new LandingPage());
+          }
         });
-    cancelButton.addActionListener(e ->PageManager.getInstance().showPage(new LandingPage()));
-    
+    cancelButton.addActionListener(e -> PageManager.getInstance().showPage(new LandingPage()));
+
     itemTypeBox.addItemListener(new ItemTypeListener());
     itemSubtypeBox.addItemListener(new ItemTypeListener());
     itemDescriptionArea.getDocument().addDocumentListener(new DebouncedDocumentListener());
@@ -247,65 +244,73 @@ public class ItemFoundPage extends JScrollPane {
     phoneField.getDocument().addDocumentListener(new DebouncedDocumentListener());
   }
 
-public void addFoundItem() {
+  public boolean addFoundItem() {
     if (!validateUpdateFoundItemForm()) {
-        JOptionPane.showMessageDialog(
-            this,
-            "Invalid Found Item: The provided item data is invalid.",
-            "Error",
-            JOptionPane.ERROR_MESSAGE);
-        return;
+      JOptionPane.showMessageDialog(
+          this,
+          "Invalid Found Item: The provided item data is invalid.",
+          "Error",
+          JOptionPane.ERROR_MESSAGE);
+      return false;
     }
 
     System.out.println("WENT HERE!!!!");
-    
+
     ImageService imageService = new ImageService();
     ItemService itemService = new ItemService();
-    
-    try {
-        String itemType = (String) itemTypeBox.getSelectedItem();
-        String itemSubtype = (String) itemSubtypeBox.getSelectedItem();
-        String itemDescription = itemDescriptionArea.getText();
-        String locationDetails = itemLocationArea.getText();
 
-        LocalDate date = datePicker.getSelectedDate();
-        LocalTime time = timePicker.getSelectedTime();
-        LocalDateTime dateTimeFound = date.atTime(time);
-        String itemPhotoPath = null;
-        String reporterName = nameField.getText();
-        String reporterEmail = emailField.getText();
-        String reporterPhone = phoneField.getText();
-        
-        if(selectedFile== null){
-            itemPhotoPath = null;
-        }else{
-            itemPhotoPath = imageService.saveImage(this, selectedFile, ImageService.FOUND_ITEMS_PATH);
-        }
-        
-        if (reporterPhone.equals("")) {
+    try {
+      String itemType = (String) itemTypeBox.getSelectedItem();
+      String itemSubtype = (String) itemSubtypeBox.getSelectedItem();
+      String itemDescription = itemDescriptionArea.getText();
+      String locationDetails = itemLocationArea.getText();
+
+      LocalDate date = datePicker.getSelectedDate();
+      LocalTime time = timePicker.getSelectedTime();
+      LocalDateTime dateTimeFound = date.atTime(time);
+      String itemPhotoPath = null;
+      String reporterName = nameField.getText();
+      String reporterEmail = emailField.getText();
+      String reporterPhone = phoneField.getText();
+
+      if (selectedFile == null) {
+        itemPhotoPath = null;
+      } else {
+        itemPhotoPath = imageService.saveImage(this, selectedFile, ImageService.FOUND_ITEMS_PATH);
+      }
+
+      if (reporterPhone.equals("")) {
         reporterPhone = null;
       }
-        System.out.println("Type: " + itemType);
-        System.out.println("Subtype: " + itemSubtype);
-        System.out.println("Description: " + itemDescription);
-        System.out.println("Location: " + locationDetails);
-        System.out.println("Date & Time: " + dateTimeFound);
-        System.out.println("PhotoPath: " + itemPhotoPath);
-        System.out.println("Name: " + reporterName);
-        System.out.println("Email: " + reporterEmail);
-        System.out.println("Phone: " + reporterPhone);
-        
-        itemService.addFoundItem(itemType,itemSubtype,itemDescription,locationDetails,dateTimeFound,itemPhotoPath,reporterName,reporterEmail,reporterPhone);
-      
-        // Assign to fields or process further here...
+      System.out.println("Type: " + itemType);
+      System.out.println("Subtype: " + itemSubtype);
+      System.out.println("Description: " + itemDescription);
+      System.out.println("Location: " + locationDetails);
+      System.out.println("Date & Time: " + dateTimeFound);
+      System.out.println("PhotoPath: " + itemPhotoPath);
+      System.out.println("Name: " + reporterName);
+      System.out.println("Email: " + reporterEmail);
+      System.out.println("Phone: " + reporterPhone);
 
+      itemService.addFoundItem(
+          itemType,
+          itemSubtype,
+          itemDescription,
+          locationDetails,
+          dateTimeFound,
+          itemPhotoPath,
+          reporterName,
+          reporterEmail,
+          reporterPhone);
+
+      // Assign to fields or process further here...
+
+      return true;
     } catch (IllegalArgumentException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      return false;
     }
-    
-}
-
-
+  }
 
   // LEAVE
   private boolean validateItemTypeAndSubtype() {
@@ -534,6 +539,16 @@ public void addFoundItem() {
     }
   }
 
+  private void showToast(Toast.Type type, String message) {
+    ToastStyle style = new ToastStyle();
+    style.setBackgroundType(BackgroundType.DEFAULT);
+    style.setBorderType(BorderType.LEADING_LINE);
+    style.setShowLabel(true);
+    style.setIconSeparateLine(true);
+    ToastOption option = Toast.createOption().setStyle(style);
+    Toast.show(this, type, message, ToastLocation.TOP_CENTER, option);
+  }
+
   private JComboBox<String> itemTypeBox, itemSubtypeBox;
   private JTextArea itemDescriptionArea, itemLocationArea;
   private JScrollPane scrollDescription, scrollLocation;
@@ -546,7 +561,7 @@ public void addFoundItem() {
   private JButton photoButton, clearButton;
   private Timer debounceTimer; // leave
 
-  private JButton approveButton,cancelButton;
+  private JButton approveButton, cancelButton;
   private JLabel itemTypeErrorLabel,
       itemSubtypeErrorLabel,
       itemDescriptionErrorLabel,

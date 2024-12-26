@@ -39,11 +39,17 @@ import net.miginfocom.swing.MigLayout;
 import raven.datetime.component.date.DatePicker;
 import raven.datetime.component.time.TimePicker;
 import raven.extras.AvatarIcon;
+import raven.modal.Toast;
+import raven.modal.Toast.Type;
+import raven.modal.toast.option.ToastLocation;
+import raven.modal.toast.option.ToastOption;
+import raven.modal.toast.option.ToastStyle;
+import raven.modal.toast.option.ToastStyle.BackgroundType;
+import raven.modal.toast.option.ToastStyle.BorderType;
 
 public class ItemLostPage extends JScrollPane {
   private JPanel panel;
   private ItemValidator validator = new ItemValidator();
-  
 
   public ItemLostPage() {
     JPanel topPanel =
@@ -62,7 +68,7 @@ public class ItemLostPage extends JScrollPane {
     init();
   }
 
- private void init() {
+  private void init() {
     itemTypeBox = new JComboBox<>(ItemTypeManager.ITEM_TYPES);
     itemSubtypeBox = new JComboBox<>(new String[] {""});
 
@@ -86,14 +92,14 @@ public class ItemLostPage extends JScrollPane {
     photoButton = new JButton("Choose Photo");
     clearButton = new JButton("Clear");
     photoLabel = new JLabel(new AvatarIcon("", 350, 350, 0));
+    photoLabel.setVisible(false);
 
     nameField = new JTextField();
     emailField = new JTextField();
     phoneField = new JTextField();
 
-    approveButton = new JButton("Approve");
+    approveButton = new JButton("Submit Report");
     cancelButton = new JButton("Cancel Report");
-
 
     nameField.putClientProperty(
         FlatClientProperties.PLACEHOLDER_TEXT, "Enter your name (e.g., John D. Smith)");
@@ -152,7 +158,7 @@ public class ItemLostPage extends JScrollPane {
     panel.add(timeField);
     panel.add(dateTimeErrorLabel);
 
-    panel.add(new RequiredLabel("Item Photo"), "gapy 5 0");
+    panel.add(new JLabel("Item Photo"), "gapy 5 0");
     panel.add(photoErrorLabel);
     panel.add(photoButton, "split 2");
     panel.add(clearButton);
@@ -176,19 +182,7 @@ public class ItemLostPage extends JScrollPane {
     buttonPanel.add(cancelButton);
 
     cancelButton.putClientProperty(
-        FlatClientProperties.STYLE,
-        ""
-            + "font: +2 bold;"
-            + "margin: 8, 12, 8, 12;"
-            + "background: #741B13;"
-            + "borderColor: #741B13;"
-            + "borderWidth: 1;"
-            + "focusColor: #74211380;"
-            + "focusedBorderColor: #681E118D;"
-            + "foreground: #F6F6F6;"
-            + "hoverBackground: #811E15;"
-            + "hoverBorderColor: #681E118D;"
-            + "pressedBackground: #A0251A");
+        FlatClientProperties.STYLE, "" + "font: +2 bold;" + "margin: 8, 12, 8, 12;");
     approveButton.putClientProperty(
         FlatClientProperties.STYLE,
         ""
@@ -232,10 +226,21 @@ public class ItemLostPage extends JScrollPane {
         });
     approveButton.addActionListener(
         e -> {
-            addFoundItem();
+          if (addLostItem()) {
+            String message =
+                "You will receive an email from us as soon as possible "
+                    + "about your lost item with updates and any necessary next steps.";
+            JOptionPane.showMessageDialog(
+                this,
+                message,
+                "Thank you for submitting your report",
+                JOptionPane.INFORMATION_MESSAGE);
+            showToast(Type.SUCCESS, "Lost Item Reported Successfully!");
+            PageManager.getInstance().showPage(new LandingPage());
+          }
         });
-    cancelButton.addActionListener(e ->PageManager.getInstance().showPage(new LandingPage()));
-    
+    cancelButton.addActionListener(e -> PageManager.getInstance().showPage(new LandingPage()));
+
     itemTypeBox.addItemListener(new ItemTypeListener());
     itemSubtypeBox.addItemListener(new ItemTypeListener());
     itemDescriptionArea.getDocument().addDocumentListener(new DebouncedDocumentListener());
@@ -247,65 +252,71 @@ public class ItemLostPage extends JScrollPane {
     phoneField.getDocument().addDocumentListener(new DebouncedDocumentListener());
   }
 
-public void addFoundItem() {
-    if (!validateUpdateFoundItemForm()) {
-        JOptionPane.showMessageDialog(
-            this,
-            "Invalid Found Item: The provided item data is invalid.",
-            "Error",
-            JOptionPane.ERROR_MESSAGE);
-        return;
+  public boolean addLostItem() {
+    if (!validateUpdateLostItemForm()) {
+      JOptionPane.showMessageDialog(
+          this,
+          "Invalid Lost Item: The provided item data is invalid.",
+          "Error",
+          JOptionPane.ERROR_MESSAGE);
+      return false;
     }
 
     System.out.println("WENT HERE!!!!");
-    
+
     ImageService imageService = new ImageService();
     ItemService itemService = new ItemService();
-    
-    try {
-        String itemType = (String) itemTypeBox.getSelectedItem();
-        String itemSubtype = (String) itemSubtypeBox.getSelectedItem();
-        String itemDescription = itemDescriptionArea.getText();
-        String locationDetails = itemLocationArea.getText();
 
-        LocalDate date = datePicker.getSelectedDate();
-        LocalTime time = timePicker.getSelectedTime();
-        LocalDateTime dateTimeFound = date.atTime(time);
-        String itemPhotoPath = null;
-        String reporterName = nameField.getText();
-        String reporterEmail = emailField.getText();
-        String reporterPhone = phoneField.getText();
-        
-        if(selectedFile== null){
-            itemPhotoPath = null;
-        }else{
-            itemPhotoPath = imageService.saveImage(this, selectedFile, ImageService.LOST_ITEMS_PATH);
-        }
-        
-        if (reporterPhone.equals("")) {
+    try {
+      String itemType = (String) itemTypeBox.getSelectedItem();
+      String itemSubtype = (String) itemSubtypeBox.getSelectedItem();
+      String itemDescription = itemDescriptionArea.getText();
+      String locationDetails = itemLocationArea.getText();
+
+      LocalDate date = datePicker.getSelectedDate();
+      LocalTime time = timePicker.getSelectedTime();
+      LocalDateTime dateTimeLost = date.atTime(time);
+      String itemPhotoPath = null;
+      String reporterName = nameField.getText();
+      String reporterEmail = emailField.getText();
+      String reporterPhone = phoneField.getText();
+
+      if (selectedFile == null) {
+        itemPhotoPath = null;
+      } else {
+        itemPhotoPath = imageService.saveImage(this, selectedFile, ImageService.LOST_ITEMS_PATH);
+      }
+
+      if (reporterPhone.equals("")) {
         reporterPhone = null;
       }
-        System.out.println("Type: " + itemType);
-        System.out.println("Subtype: " + itemSubtype);
-        System.out.println("Description: " + itemDescription);
-        System.out.println("Location: " + locationDetails);
-        System.out.println("Date & Time: " + dateTimeFound);
-        System.out.println("PhotoPath: " + itemPhotoPath);
-        System.out.println("Name: " + reporterName);
-        System.out.println("Email: " + reporterEmail);
-        System.out.println("Phone: " + reporterPhone);
-        
-        itemService.addLostItem(itemType,itemSubtype,itemDescription,locationDetails,dateTimeFound,itemPhotoPath,reporterName,reporterEmail,reporterPhone);
-      
-        // Assign to fields or process further here...
+      System.out.println("Type: " + itemType);
+      System.out.println("Subtype: " + itemSubtype);
+      System.out.println("Description: " + itemDescription);
+      System.out.println("Location: " + locationDetails);
+      System.out.println("Date & Time: " + dateTimeLost);
+      System.out.println("PhotoPath: " + itemPhotoPath);
+      System.out.println("Name: " + reporterName);
+      System.out.println("Email: " + reporterEmail);
+      System.out.println("Phone: " + reporterPhone);
 
+      itemService.addLostItem(
+          itemType,
+          itemSubtype,
+          itemDescription,
+          locationDetails,
+          dateTimeLost,
+          itemPhotoPath,
+          reporterName,
+          reporterEmail,
+          reporterPhone);
+
+      return true;
     } catch (IllegalArgumentException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      return false;
     }
-    
-}
-
-
+  }
 
   // LEAVE
   private boolean validateItemTypeAndSubtype() {
@@ -390,18 +401,6 @@ public void addFoundItem() {
     return isValid;
   }
 
-  private boolean validatePhoto() {
-    boolean isVisible = photoLabel.isVisible();
-
-    if (isVisible) {
-      setFieldValid(photoLabel, photoErrorLabel);
-    } else {
-      setFieldInvalid(photoLabel, photoErrorLabel);
-    }
-
-    return isVisible;
-  }
-
   private boolean validateNameField() {
     String name = nameField.getText();
     if (validator.isValidReporterName(name)) {
@@ -435,12 +434,11 @@ public void addFoundItem() {
     }
   }
 
-  private boolean validateUpdateFoundItemForm() {
+  private boolean validateUpdateLostItemForm() {
     return validateItemTypeAndSubtype()
         & validateDescriptionArea()
         & validateLocationArea()
         & validateDateTimeField()
-        & validatePhoto()
         & validateNameField()
         & validateEmailField()
         & validatePhoneField();
@@ -534,6 +532,16 @@ public void addFoundItem() {
     }
   }
 
+  private void showToast(Toast.Type type, String message) {
+    ToastStyle style = new ToastStyle();
+    style.setBackgroundType(BackgroundType.DEFAULT);
+    style.setBorderType(BorderType.LEADING_LINE);
+    style.setShowLabel(true);
+    style.setIconSeparateLine(true);
+    ToastOption option = Toast.createOption().setStyle(style);
+    Toast.show(this, type, message, ToastLocation.TOP_CENTER, option);
+  }
+
   private JComboBox<String> itemTypeBox, itemSubtypeBox;
   private JTextArea itemDescriptionArea, itemLocationArea;
   private JScrollPane scrollDescription, scrollLocation;
@@ -546,7 +554,7 @@ public void addFoundItem() {
   private JButton photoButton, clearButton;
   private Timer debounceTimer; // leave
 
-  private JButton approveButton,cancelButton;
+  private JButton approveButton, cancelButton;
   private JLabel itemTypeErrorLabel,
       itemSubtypeErrorLabel,
       itemDescriptionErrorLabel,
@@ -557,4 +565,3 @@ public void addFoundItem() {
       emailErrorLabel,
       phoneErrorLabel;
 }
-
