@@ -17,7 +17,7 @@ public class ItemTypeManager {
 
     itemSubtypesMap.put(
         "Accessories", new String[] {
-            "Select Accessories", "Wallet", "Watch", "Glasses", 
+            "Select Accessories", "Necklace", "Watch", "Glasses", 
             "Jewelry", "Keychain", "Others"
         });
 
@@ -35,7 +35,7 @@ public class ItemTypeManager {
 
     itemSubtypesMap.put(
         "Personal Items", new String[] {
-            "Select Personal Item", "Water Bottle", "Umbrella", "Perfume", 
+            "Select Personal Item", "Wallet", "Water Bottle", "Umbrella", "Perfume", 
             "Makeup Kit", "Hand Sanitizer", "Hairbrush", "Others"
         });
 
