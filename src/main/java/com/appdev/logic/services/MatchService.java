@@ -9,7 +9,7 @@ import java.util.Map;
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
 public class MatchService {
-  private static final double MATCH_THRESHOLD = 0.8;
+  private static final double MATCH_THRESHOLD = 0.85;
   private MatchingMode currentMode = MatchingMode.SAME_TYPE; // Default mode
 
   public enum MatchingMode {
@@ -51,6 +51,10 @@ public class MatchService {
 
         String foundDescription = preprocessString(foundItem.getItemDescription());
         double jaccardSimilarity = jaccard.apply(lostDescrption, foundDescription);
+
+        // Print the IDs for debugging
+        // System.out.println("Lost Item ID: " + lostItem.getLostItemId() + ", Found Item ID: " + foundItem.getFoundItemId() + ", Similarity: " + jaccardSimilarity);
+
         if (jaccardSimilarity >= MATCH_THRESHOLD) {
           matchedFoundItems.add(new MatchResult(foundItem, jaccardSimilarity));
         }
