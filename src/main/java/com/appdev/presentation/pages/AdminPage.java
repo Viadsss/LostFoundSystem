@@ -722,7 +722,7 @@ public class AdminPage extends JPanel {
     radioGroup.add(dayRadio);
     radioPanel.add(subtypeRadio);
     radioPanel.add(dayRadio);
-    typeRadio.setSelected(true);
+    subtypeRadio.setSelected(true);
 
     // STYLES
     StyleManager.styleTablePanel(panel);
