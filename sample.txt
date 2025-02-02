@@ -1,0 +1,21 @@
+// Lost Item
+type: Clothing
+subtype: Hat
+description: Color white cap with NYC logo, there's fabric tears on the front and top.
+location: Lagoon
+date and time: 2-4-2025 9:00 am
+photo: sample/simulation/lost img 1
+full name: Wendel de Dios
+email address: wendeldedios2122@gmail.com
+phone number: 09324069350
+
+// Found Item
+type: Clothing
+subtype: Hat
+description: NYC logo cap, color white. Have a bunch of fabric tears.
+location: Lagoon
+date and time: 2-4-2025 10:00 am
+photo: sample/simulation/found img 1
+full name: John Paul P. Viado
+email address: johnpaulviado07@gmail.com
+phone number: 09516985621
