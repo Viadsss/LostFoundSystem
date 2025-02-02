@@ -28,11 +28,13 @@ cd your-repository
 Before running the application, **copy** the `.env_example` file to `.env`:
 
 - **Linux/macOS (Bash)**:
+
   ```bash
   cp .env_example .env
   ```
 
 - **Windows (CMD)**:
+
   ```cmd
   copy .env_example .env
   ```
@@ -46,11 +48,13 @@ Then, open the `.env` file and update the placeholders with your actual values (
 Run the `init.sql` script to set up the database:
 
 - **For PowerShell**:
+
   ```powershell
   Get-Content .\init.sql | mysql -u root -p
   ```
 
 - **For CMD or Bash**:
+
   ```bash
   mysql -u root -p < init.sql
   ```
@@ -63,11 +67,12 @@ Compile and run the application in your IDE (e.g., NetBeans or VS Code).
 
 ## 🤝 Contributing
 
-### For Collaborators:
+### For Collaborators
 
 If you're a collaborator on this repository, follow these steps to contribute:
 
 1. **Clone the Repository & Setup:** (if you haven’t already):
+
    ```bash
    git clone https://github.com/Viadsss/LostFoundSystem.git
    cd LostFoundSystem
@@ -75,6 +80,7 @@ If you're a collaborator on this repository, follow these steps to contribute:
 
 2. **Pull the Latest Changes**:
    Make sure your `main` branch is up to date:
+
    ```bash
    git checkout main
    git pull origin main
@@ -85,6 +91,7 @@ If you're a collaborator on this repository, follow these steps to contribute:
 
 4. **Commit Changes**:
    After making changes, commit them:
+
    ```bash
    git add [file/s]
    git commit -m "message"
@@ -92,9 +99,11 @@ If you're a collaborator on this repository, follow these steps to contribute:
 
 5. **Push Changes**:
    Push your changes directly to the `main` branch for now:
+
    ```bash
    git push origin main
    ```
 
-### Note for Non-Collaborators:
+### Note for Non-Collaborators
+
 If you are not a collaborator on this repository, please **fork** the repository, make your changes, and create a **Pull Request**. Your changes will be reviewed and merged by one of the collaborators.
