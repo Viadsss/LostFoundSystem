@@ -3,9 +3,13 @@ package com.appdev.logic.services;
 import com.appdev.logic.models.FoundItem;
 import com.appdev.logic.models.LostItem;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
 public class MatchService {
@@ -134,6 +138,29 @@ public class MatchService {
       return "FoundItem ID: " + foundItem.getFoundItemId() + ", Similarity: " + similarity;
     }
   }
+
+/**
+ * Calculates the Jaccard similarity between two strings.
+ *
+ * @param str1 The first string.
+ * @param str2 The second string.
+ * @return The Jaccard similarity score between 0 and 1.
+ */
+  public double calculateJaccardSimilarity(String str1, String str2) {
+    // Tokenize the strings into sets of words
+    Set<String> set1 = new HashSet<>(Arrays.asList(str1.split("\\s+")));
+    Set<String> set2 = new HashSet<>(Arrays.asList(str2.split("\\s+")));
+
+    // Calculate the intersection and union of the sets
+    Set<String> intersection = new HashSet<>(set1);
+    intersection.retainAll(set2);
+
+    Set<String> union = new HashSet<>(set1);
+    union.addAll(set2);
+
+    // Return the Jaccard similarity score
+    return (double) intersection.size() / union.size();
+  }  
 
   /**
    * Preprocesses a given string by normalizing it for comparison. The string is converted to
