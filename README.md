@@ -129,3 +129,115 @@ If you're a collaborator on this repository, follow these steps to contribute:
 ### Note for Non-Collaborators
 
 If you are not a collaborator on this repository, please **fork** the repository, make your changes, and create a **Pull Request**. Your changes will be reviewed and merged by one of the collaborators.
+
+## 📂 Project Structure
+
+The project directory structure is organized as follows:
+
+```plaintext
+LostFoundSystem/
+├── src/                    # Source code files
+│   ├── main/               # Main application code
+│   │   ├── java/           # Java source files
+│   │   │   ├── com/
+│   │   │   │   ├── appdev/
+│   │   │   │   │   ├── data/
+│   │   │   │   │   │   ├── dao/
+│   │   │   │   │   │   │   ├── FoundItemDAO.java
+│   │   │   │   │   │   │   ├── LostItemDAO.java
+│   │   │   │   │   │   │   ├── MatchItemDAO.java
+│   │   │   │   │   ├── database/
+│   │   │   │   │   │   ├── DbConnection.java
+│   │   │   │   │   ├── logic/
+│   │   │   │   │   │   ├── managers/
+│   │   │   │   │   │   │   ├── ItemTypeManager.java
+│   │   │   │   │   │   │   ├── PageManager.java
+│   │   │   │   │   │   │   ├── StyleManager.java
+│   │   │   │   │   │   ├── models/
+│   │   │   │   │   │   │   ├── FoundItem.java
+│   │   │   │   │   │   │   ├── Item.java
+│   │   │   │   │   │   │   ├── LostItem.java
+│   │   │   │   │   │   │   ├── MatchItem.java
+│   │   │   │   │   │   ├── services/
+│   │   │   │   │   │   │   ├── EmailService.java
+│   │   │   │   │   │   │   ├── ImageService.java
+│   │   │   │   │   │   │   ├── ItemService.java
+│   │   │   │   │   │   │   ├── MatchService.java
+│   │   │   │   │   │   ├── validations/
+│   │   │   │   │   │   │   ├── ItemValidator.java
+│   │   │   │   │   ├── presentation/
+│   │   │   │   │   │   ├── MainFrame.java
+│   │   │   │   │   │   ├── components/
+│   │   │   │   │   │   │   ├── forms/
+│   │   │   │   │   │   │   │   ├── ItemFormUpdate.java
+│   │   │   │   │   │   │   │   ├── ItemFormView.java
+│   │   │   │   │   │   │   │   ├── MatchItemFormView.java
+│   │   │   │   │   │   │   ├── labels/
+│   │   │   │   │   │   │   │   ├── ErrorLabel.java
+│   │   │   │   │   │   │   │   ├── RequiredLabel.java
+│   │   │   │   │   │   │   ├── pages/
+│   │   │   │   │   │   │   │   ├── AdminPage.java
+│   │   │   │   │   │   │   │   ├── ItemFoundPage.java
+│   │   │   │   │   │   │   │   ├── ItemLostPage.java
+│   │   │   │   │   │   │   │   ├── LandingPage.java
+│   │   │   │   │   │   │   │   ├── VerificationPage.java
+│   │   │   │   │   │   │   ├── table/
+│   │   │   │   │   │   │   │   ├── MatchSearchFilterDocumentListener.java
+│   │   │   │   │   │   │   │   ├── SearchFilterDocumentListener.java
+│   │   │   │   │   │   │   │   ├── TableDateTimeCellRenderer.java
+│   │   │   │   │   │   │   │   ├── TableIdCellRenderer.java
+│   │   │   │   │   │   │   │   ├── TableImageCellRenderer.java
+│   │   │   │   │   │   │   │   ├── TablePercentageCellRenderer.java
+│   │   └── resources/      # Application resources (e.g., configuration files)
+│   │       ├── themes/
+│   │       │   ├── FlatLightLaf.properties
+│   │       ├── icons/
+│   │       │   ├── email.svg
+│   │       │   ├── phone.svg
+│   │       │   ├── view.svg
+│   │       │   ├── verify.svg
+│   │       │   ├── delete.svg
+│   │       │   ├── refresh.svg
+│   │       │   ├── match.svg
+│   │       │   ├── approve.svg
+│   └── test/               # Test code
+├── screenshots/            # Screenshot images for documentation
+├── .env_example            # Example environment configuration file
+├── init.sql                # Initial database setup script
+├── clear.sql               # Script to clear the database
+├── populate.sql            # Script to populate the database with sample data
+├── pom.xml                 # Maven project file
+└── README.md               # Project documentation
+```
+
+### Directory Structure Details
+
+- **data/**: Handles data access objects (DAOs) and database interactions.
+  - **dao/**: Contains DAO classes for interacting with the database.
+  - **database/**: Manages database connections and configurations.
+
+- **logic/**: Contains the core business logic of the application.
+  - **managers/**: Manages different aspects of the application, such as item types and page navigation.
+  - **models/**: Defines the data models used throughout the application.
+  - **services/**: Provides various services like email, image processing, and item management.
+  - **validations/**: Contains validation logic for different entities.
+
+- **presentation/**: Manages the user interface components.
+  - **components/**: Contains reusable UI components.
+    - **forms/**: Handles form views and updates.
+    - **labels/**: Custom label components for the UI.
+    - **pages/**: Different pages of the application.
+    - **table/**: Custom table renderers and listeners.
+
+- **resources/**: Contains application resources such as themes and icons.
+  - **themes/**: Theme configuration files.
+  - **icons/**: SVG icons used in the application.
+
+- **test/**: Contains test code for the application.
+- **screenshots/**: Stores screenshot images for documentation.
+- **.env_example**: Example environment configuration file.
+- **init.sql**: Initial database setup script.
+- **clear.sql**: Script to clear the database.
+- **populate.sql**: Script to populate the database with sample data.
+- **pom.xml**: Maven project file.
+- **README.md**: Project documentation
