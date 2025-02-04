@@ -1,7 +1,7 @@
 // Lost Item
 type: Clothing
 subtype: Hat
-description: Color white cap with NYC logo, there's fabric tears on the front and top.
+description: White cap with NYC logo, there's fabric tears on it.
 location: Lagoon
 date and time: 2-4-2025 9:00 am
 photo: sample/simulation/lost img 1
