@@ -1,3 +1,25 @@
+# ULaF: University Lost and Found
+
+The University Lost and Found (ULaF) system is designed to help students and staff report and recover lost items on campus. This system allows users to:
+
+- Report lost items with detailed descriptions and contact information.
+- Search for found items that have been reported by others.
+- Manage and update the status of reported items.
+
+The goal of ULaF is to streamline the process of recovering lost items and ensure that they are returned to their rightful owners as quickly as possible.
+
+## Screenshots
+
+![Landing Page](screenshots/landing_page.png)
+![Lost Item Page](screenshots/lost_item_page.png)
+![Admin Page - Lost Item Table](screenshots/admin_page-lost.png)
+![Admin Page - Potential Match Table](screenshots/admin_page-potential.png)
+![Verification Page](screenshots/verification_page.png)
+
+## Group Members
+
+- John Paul Viado
+- Wendel de Dios
 
 ## 🚀 Getting Started
 
