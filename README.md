@@ -8,7 +8,7 @@ The University Lost and Found (ULaF) system is designed to help students and sta
 
 The goal of ULaF is to streamline the process of recovering lost items and ensure that they are returned to their rightful owners as quickly as possible.
 
-## Screenshots
+## 📸 Screenshots
 
 ![Landing Page](screenshots/landing_page.png)
 ![Lost Item Page](screenshots/lost_item_page.png)
@@ -16,7 +16,7 @@ The goal of ULaF is to streamline the process of recovering lost items and ensur
 ![Admin Page - Potential Match Table](screenshots/admin_page-potential.png)
 ![Verification Page](screenshots/verification_page.png)
 
-## Group Members
+## 👥 Group Members
 
 - John Paul Viado
 - Wendel de Dios
