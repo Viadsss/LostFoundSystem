@@ -210,7 +210,7 @@ LostFoundSystem/
 └── README.md               # Project documentation
 ```
 
-### Directory Structure Details
+### Project Structure Details
 
 - **data/**: Handles data access objects (DAOs) and database interactions.
   - **dao/**: Contains DAO classes for interacting with the database.
